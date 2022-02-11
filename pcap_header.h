@@ -1,9 +1,7 @@
 #include <cstdint>
 #include <iomanip>
 
-using u32 = uint32_t;
-using u16 = uint16_t;
-using i32 = int32_t;
+#include "types.h"
 
 struct PcapHeader {
     u32 magic_number {};
@@ -15,6 +13,7 @@ struct PcapHeader {
     u32 network {}; // replace it with LinkType later ...
 };
 
+//Pizdec
 std::ostream& operator<<(std::ostream& os, const PcapHeader& pcap) {
     os << std::setfill('0') << std::setw(2) << std::right << std::hex
        << "Magic numer: " << ((pcap.magic_number >> 24)&0xFF) << ' ' << ((pcap.magic_number >> 16)&0xFF) << ' ' << ((pcap.magic_number >> 8)&0xFF) << ' ' << ((pcap.magic_number)&0xFF)

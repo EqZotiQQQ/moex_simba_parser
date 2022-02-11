@@ -5,6 +5,7 @@
 #include "parsers.h"
 #include "utils.h"
 #include "frame.h"
+#include "constants.h"
 
 #include <fstream>
 #include <array>
@@ -27,6 +28,7 @@ public:
         }
 
         parse_header();
+        parse_frames();
     }
 
     void parse_header() {
@@ -45,6 +47,20 @@ public:
         header.sig_figs = Parsers::parse_u32(file, endian);
         header.snap_len = Parsers::parse_u32(file, endian);
         header.network = Parsers::parse_u32(file, endian);
+    }
+
+    void parse_frames() {
+        while (!file.eof()) {
+            Frame frame;
+            frame.header.timestamp_ms = Parsers::parse_i32(file, endian);
+            frame.header.timestamp_ns = Parsers::parse_i32(file, endian);
+            frame.header.pack_length = Parsers::parse_i32(file, endian);
+            frame.header.real_length = Parsers::parse_i32(file, endian);
+
+            frame.l2.fill(file, endian);
+            frame.l3.fill(file, endian);
+            frame.l4.fill(file, endian);
+        }
     }
 
     void validate_endians() {
@@ -88,7 +104,6 @@ public:
 //        for (int i = 0; i < N; i++) {
 //            result |= bytes[i] << N * 8 - i * 8;
 //        }
-//
 //    }
 
 

@@ -1,17 +1,19 @@
 #pragma once
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 #include <fstream>
-#include "utils.h"
 
-using i32 = int32_t;
-using u32 = uint32_t;
-using i16 = int16_t;
-using u16 = uint16_t;
+#include "utils.h"
+#include "types.h"
+
 
 class Parsers {
 public:
+    static u8 parse_u8(std::ifstream& file, Endian endian) {
+        return static_cast<u8>(file.get());
+    }
+
     static u16 parse_u16(std::ifstream& file, Endian endian) {
         u16 u16_val {};
         std::array<i32, 2> bytes {};
