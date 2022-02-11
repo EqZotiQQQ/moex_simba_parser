@@ -15,10 +15,10 @@ struct FrameHeader {
 };
 
 std::ostream& operator<<(std::ostream& os, const FrameHeader& frame_header) {
-    os << "frame_header.real_length:    " << std::dec << frame_header.real_length
-       << "\nframe_header.pack_length:  " << std::dec << frame_header.pack_length
-       << "\nframe_header.timestamp_ms: " << std::dec << frame_header.timestamp_ms
-       << "\nframe_header.timestamp_ns: " << std::dec << frame_header.timestamp_ns;
+    os << "Real length: "            << std::dec << static_cast<u16>(frame_header.real_length) << '\n';
+    os << "Packet length: "          << std::dec << static_cast<u16>(frame_header.pack_length) << '\n';
+    os << "Timestamp milliseconds: " << std::dec << static_cast<u16>(frame_header.timestamp_ms) << '\n';
+    os << "Timestamp nanoseconds: "  << std::dec << static_cast<u16>(frame_header.timestamp_ns) << '\n';
     return os;
 }
 

@@ -17,4 +17,10 @@ struct Layer4 {
     }
 };
 
-
+std::ostream& operator<<(std::ostream& os, const Layer4& frame) {
+    os << "Source port: "      << std::dec << static_cast<u16>(frame.source_port) << '\n';
+    os << "Destination port: " << std::dec << static_cast<u16>(frame.destination_port) << '\n';
+    os << "Datagram length: "  << std::dec << static_cast<u16>(frame.datagram_length) << '\n';
+    os << "Check sum: "        << std::dec << static_cast<u16>(frame.check_sum) << '\n';
+    return os;
+}

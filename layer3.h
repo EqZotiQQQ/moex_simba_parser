@@ -33,3 +33,22 @@ struct Layer3 {
     }
 };
 
+std::ostream& operator<<(std::ostream& os, const Layer3& frame) {
+    os << "Version: "           << std::dec << static_cast<u16>(frame.version) << '\n';
+    os << "Ip header length: "  << std::dec << static_cast<u16>(frame.ip_header_len) << '\n';
+    os << "diff_serv_field: "   << std::dec << static_cast<u16>(frame.diff_serv_field) << '\n';
+    os << "total_len: "         << std::dec << static_cast<u16>(frame.total_len) << '\n';
+    os << "identification: "    << std::dec << static_cast<u16>(frame.identification) << '\n';
+    os << "flags: "             << std::dec << static_cast<u16>(frame.flags) << '\n';
+    os << "ttl: "               << std::dec << static_cast<u16>(frame.ttl) << '\n';
+    os << "header_check_sum: "  << std::dec << static_cast<u16>(frame.header_check_sum) << '\n';
+    os  << "Source MAC: "       << std::dec << static_cast<u16>(frame.source_ip[0]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_ip[1]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_ip[2]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_ip[3]) << '\n';
+    os  << "Destination MAC: "  << std::dec << static_cast<u16>(frame.dest_ip[0]) << ':'
+                                << std::dec << static_cast<u16>(frame.dest_ip[1]) << ':'
+                                << std::dec << static_cast<u16>(frame.dest_ip[2]) << ':'
+                                << std::dec << static_cast<u16>(frame.dest_ip[3]) << '\n';
+    return os;
+}

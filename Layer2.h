@@ -21,3 +21,20 @@ struct Layer2 {
         layer_3_protocol = Parsers::parse_u16(file, endian);
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const Layer2& frame) {
+    os  << "Destination MAC: "  << std::dec << static_cast<u16>(frame.destination_mac[0]) << ':'
+                                << std::dec << static_cast<u16>(frame.destination_mac[1]) << ':'
+                                << std::dec << static_cast<u16>(frame.destination_mac[2]) << ':'
+                                << std::dec << static_cast<u16>(frame.destination_mac[3]) << ':'
+                                << std::dec << static_cast<u16>(frame.destination_mac[4]) << ':'
+                                << std::dec << static_cast<u16>(frame.destination_mac[5]) << '\n';
+    os  << "Source MAC: "       << std::dec << static_cast<u16>(frame.source_mac[0]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_mac[1]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_mac[2]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_mac[3]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_mac[4]) << ':'
+                                << std::dec << static_cast<u16>(frame.source_mac[5]) << '\n';
+    os  << "Layer 3 protocol: " << std::dec << static_cast<u16>(frame.layer_3_protocol) << '\n';
+    return os;
+}

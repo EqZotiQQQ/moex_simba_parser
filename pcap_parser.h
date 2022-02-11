@@ -38,7 +38,6 @@ public:
         }
         header.magic_number = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
         validate_endians();
-        std::cout << header.magic_number << '\n';
 
         // Dream: parse<u16>();
         header.version_major = Parsers::parse_u16(file, endian);
@@ -52,6 +51,7 @@ public:
     void parse_frames() {
         while (!file.eof()) {
             Frame frame;
+            //move out of this... like frame.header = fill();
             frame.header.timestamp_ms = Parsers::parse_i32(file, endian);
             frame.header.timestamp_ns = Parsers::parse_i32(file, endian);
             frame.header.pack_length = Parsers::parse_i32(file, endian);
@@ -60,6 +60,11 @@ public:
             frame.l2.fill(file, endian);
             frame.l3.fill(file, endian);
             frame.l4.fill(file, endian);
+
+            std::cout << frame.l2;
+            std::cout << frame.l3;
+            std::cout << frame.l4;
+            break;
         }
     }
 
