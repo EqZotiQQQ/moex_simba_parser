@@ -6,7 +6,9 @@
 #include "utils.h"
 #include "parsers.h"
 
-struct Layer2 {
+//looks like its not my case.
+
+struct layer2 {
     std::array<u8, 6> destination_mac {};
     std::array<u8, 6> source_mac {};
     u16 layer_3_protocol {};
@@ -22,7 +24,7 @@ struct Layer2 {
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const Layer2& frame) {
+std::ostream& operator<<(std::ostream& os, const layer2& frame) {
     os  << "Destination MAC: "  << std::dec << static_cast<u16>(frame.destination_mac[0]) << ':'
                                 << std::dec << static_cast<u16>(frame.destination_mac[1]) << ':'
                                 << std::dec << static_cast<u16>(frame.destination_mac[2]) << ':'
