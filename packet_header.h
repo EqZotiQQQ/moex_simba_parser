@@ -2,7 +2,6 @@
 
 #include <ostream>
 #include "types.h"
-#include "layer2.h"
 #include "layer4.h"
 
 
