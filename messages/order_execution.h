@@ -40,6 +40,7 @@ struct OrderExecution : public MessageBase {
 
 std::ostream& operator<<(std::ostream& os, const OrderExecution& order) {
     os << "====================  OrderExecution packet: ===================\n";
+    os << std::dec;
     os << "ID заявки "<< order.md_entry_id << '\n';
     os << "Цена заявки "<< order.md_entry_px << '\n';
     os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';

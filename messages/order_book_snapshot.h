@@ -12,10 +12,17 @@ struct OrderBookSnapshot : public MessageBase {
     i64 md_entry_px;
     i64 md_entry_size;
     i64 trade_id;
-    u64 md_flags_set;
+    u64 md_flags;
     u8 md_entry_type;
 
     static constexpr u8 size_bytes = 49;
+
+    static constexpr u8 day = 0x1;
+    static constexpr u8 ioc = 0x2;
+
+    static constexpr u8 bid = '0';
+    static constexpr u8 ask = '1';
+    static constexpr u8 empty_book = 'J';
 
     static OrderBookSnapshot parse(std::ifstream& file, Endian endian) {
         return OrderBookSnapshot {
@@ -24,21 +31,35 @@ struct OrderBookSnapshot : public MessageBase {
                 .md_entry_px = Parsers::parse_i64(file, endian),
                 .md_entry_size = Parsers::parse_i64(file, endian),
                 .trade_id = Parsers::parse_i64(file, endian),
-                .md_flags_set = Parsers::parse_u64(file, endian),
+                .md_flags = Parsers::parse_u64(file, endian),
                 .md_entry_type = Parsers::parse_u8(file, endian),
         };
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
-    os << "====================  OrderExecution packet: ===================\n";
+std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {    os << "====================  OrderExecution packet: ===================\n";
     os << "ID заявки "<< order.md_entry_id << '\n';
     os << "Время заявки "<< order.transact_time << '\n';
     os << "Цена заявки "<< order.md_entry_px << '\n';
     os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
     os << "Идентификатор сделки "<< order.trade_id << '\n';
-    os << "Типы сделок -> битовая маска (TODO) "<< order.md_flags_set << '\n';
-    os << "Тип заявки "<< order.md_entry_type << '\n';
+    os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
+    if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
+        os << "Котировочная сделка (Day)\n";
+    }
+    if ((order.md_flags & OrderBookSnapshot::ioc) == OrderBookSnapshot::ioc) {
+        os << "Встречная сделка (IOC)\n";
+    }
+
+    os << "Тип заявки ";//<< order.md_entry_type << '\n';
+    if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
+        os << "Продажа (Bid)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
+        os << "Покупка (Ask)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::empty_book) == OrderBookSnapshot::empty_book) {
+        os << "Пустой стакан\n";
+    }
+
     os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
 
     return os;

@@ -33,7 +33,28 @@ std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header)
     os << "============================== MarketDataPacketHeader: =======================================\n";
     os << "Порядковый номер сообщения: " << std::dec << static_cast<u32>(header.msg_seq_number) << '\n';
     os << "Размер сообщения: "           << std::dec << static_cast<u16>(header.msg_size) << '\n';
-    os << "Флаги сообщения: "            << std::dec << static_cast<u16>(header.msg_flags) << '\n';
+    os << "Флаги сообщения:\n";//            << std::dec << static_cast<u16>(header.msg_flags) << '\n';
+    if ((header.msg_flags & MarketDataPacketHeader::message_fragmentation) == MarketDataPacketHeader::message_fragmentation) {
+        os << "* 0x1 Это последний пакет фрагментированного сообщения или сообщение не фрагментировано\n";
+    } else {
+        os << "* !0x1 Это НЕ последний пакет фрагментированного сообщения\n";
+    }
+    if ((header.msg_flags & MarketDataPacketHeader::first_message) == MarketDataPacketHeader::first_message) {
+        os << "* 0x2 Первое сообщение в снапшоте по инструменту\n";
+    }
+    if ((header.msg_flags & MarketDataPacketHeader::last_message) == MarketDataPacketHeader::last_message) {
+        os << "* 0x4 Последнее сообщение в снапшоте по инструменту\n";
+    }
+    if ((header.msg_flags & MarketDataPacketHeader::first_message) == MarketDataPacketHeader::first_message) {
+        os << "* 0x8 Incremental пакет\n";
+    } else {
+        os << "* !0x8 Snapshot пакет\n";
+    }
+    if ((header.msg_flags & MarketDataPacketHeader::pos_dup_flag) == MarketDataPacketHeader::pos_dup_flag) {
+        os << "* 0x10 Трансляция полных стаканов в виде пакетов Incremental\n";
+    } else {
+        os << "* !0x10 Трансляция онлайн сообщений\n";
+    }
     os << "Отправлено в: "               << std::dec << static_cast<u64>(header.sending_time) << '\n';
     os << "============================== MarketDataPacketHeader end =======================================\n";
     return os;
