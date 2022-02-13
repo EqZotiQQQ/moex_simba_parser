@@ -44,16 +44,16 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
     return os;
 }
 
-
-
 struct OrderBookSnapshotPacket : public MessageBase {
     int32_t security_id;                            //  ID тулзы
     uint32_t last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
     uint32_t rpt_seq;                               //  Порядковый номер инкрементального обновления
     uint32_t exchange_trading_session_id;           //  ID торговой сделки
     uint16_t block_len;                             //  Длина блока
-    uint8_t group_size;                             //  Размер пачки заявок
-    std::vector<OrderBookSnapshot> bids_slice;      //  Размер пачки заявок
+    uint8_t no_md_entries;                             //  Размер пачки заявок
+    std::vector<OrderBookSnapshot> md_entries;      //  Размер пачки заявок
+
+    static constexpr u8 size_bytes = 19; // total size = 19 + sizeofOrderBookSnapshot * len(bids_slice)
 
 
     static OrderBookSnapshotPacket parse(std::ifstream& file, Endian endian) {
@@ -63,10 +63,10 @@ struct OrderBookSnapshotPacket : public MessageBase {
                 .rpt_seq = Parsers::parse_u32(file, endian),
                 .exchange_trading_session_id = Parsers::parse_u32(file, endian),
                 .block_len = Parsers::parse_u16(file, endian),
-                .group_size = Parsers::parse_u8(file, endian),
+                .no_md_entries = Parsers::parse_u8(file, endian),
         };
-        for (int i = 0; i < order_book_snapshot.group_size; i++) {
-            order_book_snapshot.bids_slice.push_back(OrderBookSnapshot::parse(file, endian));
+        for (int i = 0; i < order_book_snapshot.no_md_entries; i++) {
+            order_book_snapshot.md_entries.push_back(OrderBookSnapshot::parse(file, endian));
         }
         return order_book_snapshot;
     }
@@ -80,9 +80,10 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order)
     os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
     os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
     os << "Длина блока "                                 << order.block_len << '\n';
-    os << "Размер пачки заявок "                         << order.group_size << '\n';
-    for (int i = 0; i < order.bids_slice.size(); i++) {
-        os << order.bids_slice[i] << '\n';
+    os << "Размер пачки заявок "                         << order.no_md_entries << '\n';
+    for (int i = 0; i < order.no_md_entries; i++) {
+        os << "Заявка №" << i << '\n';
+        os << order.md_entries[i] << '\n';
     }
     os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
 

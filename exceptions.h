@@ -15,3 +15,10 @@ class InvalidMagicNumberException: public std::exception {
         return "Invalid magic number exception";
     }
 };
+
+class BadMessageTypeException: public std::exception {
+    const char* what() const noexcept override
+    {
+        return "Invalid message type";
+    }
+};

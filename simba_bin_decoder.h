@@ -34,9 +34,7 @@ struct SimbaBinaryDecoder { // Packet layer
             Parsers::skip(file, packet_length);
         } else { // snapshot
             snapshot_packet = SnapshotPacket {file, endian};
-            snapshot_packet.value();
-            SBEMessage sbe {file, endian};
-            packet_length -= sbe.parsed_bytes;
+            packet_length -= snapshot_packet.value().sbe_message.parsed_bytes;
             Parsers::skip(file, packet_length);
         }
     }

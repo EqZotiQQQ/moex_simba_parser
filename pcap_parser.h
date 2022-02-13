@@ -45,8 +45,7 @@ public:
             std::cout << pcap_frame << '\n';
             SimbaBinaryDecoder simba_decoder(packet_length);
             simba_decoder.decode(file, endian);
-            std::cout << simba_decoder << '\n'; // -> err??
-            // SimbaBinaryDecoder::parse() ???
+            std::cout << simba_decoder << '\n';
         }
         std::cout << "Parsed " << n << " packets!\n";
     }

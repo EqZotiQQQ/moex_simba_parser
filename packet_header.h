@@ -11,6 +11,8 @@ struct PacketHeader {
     u32 pack_length {}; // Number of bytes that were captured
     u32 real_length {}; // Number of bytes that were sent
 
+    constexpr static u8 size_bytes {8};
+
     static PacketHeader parse_pcap_frame_header(std::ifstream& file, Endian endian) {
         return PacketHeader {
                 .timestamp_ms = Parsers::parse_u32(file, endian),
