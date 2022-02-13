@@ -6,7 +6,6 @@
 #include "utils.h"
 #include "packet_header.h"
 #include "constants.h"
-#include "market_data.h"
 #include "simba_bin_decoder.h"
 
 #include <fstream>
@@ -35,21 +34,20 @@ public:
         i32 n {};
         while (!file.eof()) {
             n++;
-            std::cout << "_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+__________" << n << '\n';
+            std::cout << "=============================== Packet number "  << n << " ============================================" << '\n';
+            std::cout << "============================================================================================" << '\n';
             auto pcap_frame_header = PacketHeader::parse_pcap_frame_header(file, endian); // OK
             u64 packet_length = pcap_frame_header.pack_length - 42;
             std::cout << pcap_frame_header << '\n';   // OK
-            UnsupportedMessageType::skip(file, 24);
+            Parsers::skip(file, 24); // Skip unused bytes
             auto pcap_frame = PcapBody::parse(file, endian); // OK
-            UnsupportedMessageType::skip(file, 4);
+            Parsers::skip(file, 4); // Skip unused bytes
             std::cout << pcap_frame << '\n';
             SimbaBinaryDecoder simba_decoder(packet_length);
             simba_decoder.decode(file, endian);
             std::cout << simba_decoder << '\n'; // -> err??
             // SimbaBinaryDecoder::parse() ???
-            if (n == 5) break;
         }
-
         std::cout << "Parsed " << n << " packets!\n";
     }
 };

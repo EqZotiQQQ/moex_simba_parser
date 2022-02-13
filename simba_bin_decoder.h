@@ -3,8 +3,11 @@
 #include <iostream>
 #include <optional>
 #include "types.h"
-#include "market_data.h"
 #include "parsers.h"
+#include "packets/market_data_packet.h"
+#include "packets/incremental_packet.h"
+#include "packets/snapshot_packet.h"
+#include "packets/sbe/sbe_message.h"
 
 struct SimbaBinaryDecoder { // Packet layer
     SimbaBinaryDecoder(u64 len ): packet_length(len) {}
@@ -28,33 +31,33 @@ struct SimbaBinaryDecoder { // Packet layer
                 packet_length -= sbe.parsed_bytes;
                 incremental_packet.value().sbe_messages.push_back(std::move(sbe));
             }
-            UnsupportedMessageType::skip(file, packet_length);
+            Parsers::skip(file, packet_length);
         } else { // snapshot
             snapshot_packet = SnapshotPacket {file, endian};
             snapshot_packet.value();
             SBEMessage sbe {file, endian};
             packet_length -= sbe.parsed_bytes;
-            UnsupportedMessageType::skip(file, packet_length);
+            Parsers::skip(file, packet_length);
         }
     }
 };
 
 std::ostream& operator<<(std::ostream& os, const SimbaBinaryDecoder& pcap) {
+    os << "====================  Packet layer: ===================\n";
+    os << pcap.market_data_packet_header << '\n';
     if (pcap.incremental_packet) {
         os << "====================  Incremental packet: ===================\n";
-        os << pcap.market_data_packet_header << '\n';
         for (int i = 0; i < pcap.incremental_packet.value().sbe_messages.size(); i++) {
             os << "SBE Message number " << i << " of " << pcap.incremental_packet.value().sbe_messages.size() << '\n';
             os << pcap.incremental_packet.value().header << '\n';
-            os << pcap.incremental_packet.value().sbe_messages[i].header << '\n';
-            os << pcap.incremental_packet.value().sbe_messages[i].body << '\n';
+            os << pcap.incremental_packet.value().sbe_messages[i] << '\n';
         }
-        os << "+++++++++++++++++++++ Incremental packet end: +++++++++++++++\n";
+        os << "==================== Incremental packet end ====================\n";
     } else {
-        os << "====================  Snapshot packet: ===================\n";
-        os << pcap.snapshot_packet.value().sbe_message.header << '\n';
-        os << pcap.snapshot_packet.value().sbe_message.body << '\n';
-        os << "+++++++++++++++++++++ Snapshot packet end: +++++++++++++++\n";
+        os << "====================  Snapshot packet: ====================\n";
+        os << pcap.snapshot_packet.value().sbe_message << '\n';
+        os << "==================== Snapshot packet end ====================\n";
     }
+    os << "====================  Packet layer end ===================\n";
     return os;
 }

@@ -29,3 +29,18 @@ struct OrderUpdate : public MessageBase {
         };
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap) {
+        os << "====================  OrderUpdate packet: ===================\n";
+        os << "ID заявки: " << pcap.md_entry_id << '\n';
+        os << "Цена заявки: " << pcap.md_entry_px << '\n';
+        os << "Объём заявки: " << pcap.md_entry_size << '\n';
+        os << "Тип заявки (битовая маска): " << pcap.md_flags_set << '\n';
+        os << "ID инструмента: " << pcap.security_id << '\n';
+        os << "ID инкрементального обновления: " << pcap.rpt_seq << '\n';
+        os << "Тип инкрементального обновления: " << pcap.md_update_action << '\n';
+        os << "ID Тип заявки: " << pcap.md_entry_type << '\n';
+        os << "+++++++++++++++++++++ OrderUpdate packet end: +++++++++++++++\n";
+
+    return os;
+}

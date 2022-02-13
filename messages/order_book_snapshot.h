@@ -3,6 +3,7 @@
 #include <vector>
 #include "../types.h"
 #include "message_base.h"
+#include "../parsers.h"
 
 
 struct OrderBookSnapshot : public MessageBase {
@@ -29,14 +30,30 @@ struct OrderBookSnapshot : public MessageBase {
     }
 };
 
+std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
+    os << "====================  OrderExecution packet: ===================\n";
+    os << "ID заявки "<< order.md_entry_id << '\n';
+    os << "Время заявки "<< order.transact_time << '\n';
+    os << "Цена заявки "<< order.md_entry_px << '\n';
+    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
+    os << "Идентификатор сделки "<< order.trade_id << '\n';
+    os << "Типы сделок -> битовая маска (TODO) "<< order.md_flags_set << '\n';
+    os << "Тип заявки "<< order.md_entry_type << '\n';
+    os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
+
+    return os;
+}
+
+
+
 struct OrderBookSnapshotPacket : public MessageBase {
-    int32_t security_id;                            //  Numeric identifier tool 32 bit
-    uint32_t last_msg_seq_num_processed;            //  Number of MsgSeqNum 32 bit
-    uint32_t rpt_seq;                               //  Number of RptSeq 32 bit
-    uint32_t exchange_trading_session_id;           //  Trading session id 32 bit
-    uint16_t block_len;                             //  Block length of group 16 bit
-    uint8_t group_size;                             //  Group size 8 bit
-    std::vector<OrderBookSnapshot> bids_slice;   //  All snapshot records records.size() * 49 bits
+    int32_t security_id;                            //  ID тулзы
+    uint32_t last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
+    uint32_t rpt_seq;                               //  Порядковый номер инкрементального обновления
+    uint32_t exchange_trading_session_id;           //  ID торговой сделки
+    uint16_t block_len;                             //  Длина блока
+    uint8_t group_size;                             //  Размер пачки заявок
+    std::vector<OrderBookSnapshot> bids_slice;      //  Размер пачки заявок
 
 
     static OrderBookSnapshotPacket parse(std::ifstream& file, Endian endian) {
@@ -55,3 +72,19 @@ struct OrderBookSnapshotPacket : public MessageBase {
     }
 };
 
+std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order) {
+    os << "====================  OrderExecution packet: ===================\n";
+    os << std::dec;
+    os << "Числовой идентификатор инструмента "          << order.security_id << '\n';
+    os << "Последнее обработанное сообщение "            << order.last_msg_seq_num_processed << '\n';
+    os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
+    os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
+    os << "Длина блока "                                 << order.block_len << '\n';
+    os << "Размер пачки заявок "                         << order.group_size << '\n';
+    for (int i = 0; i < order.bids_slice.size(); i++) {
+        os << order.bids_slice[i] << '\n';
+    }
+    os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
+
+    return os;
+}

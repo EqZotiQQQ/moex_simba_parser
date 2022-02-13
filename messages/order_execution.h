@@ -1,15 +1,21 @@
 #pragma once
 
+#include <fstream>
+#include "message_base.h"
+#include "../types.h"
+#include "../utils.h"
+#include "../parsers.h"
+
 struct OrderExecution : public MessageBase {
     i64 md_entry_id;    // Идентификатор заявки
     i64 md_entry_px;    // Цена заявки
     i64 md_entry_size;  // Оставшееся количество в заявке
-    i64 last_px;        // Цена сделки.
+    i64 last_px;        // Цена сделки
     i64 last_qty;       // Объем сделки
     i64 trade_id;       // Идентификатор сделки
     i64 md_flags_set;   // Типы сделок -> битовая маска
-    i32 security_id;    // Числовой идентификатор инструмента.
-    u64 rpt_seq;        // Порядковый номер инкрементального обновления.
+    i32 security_id;    // Числовой идентификатор инструмента
+    u64 rpt_seq;        // Порядковый номер инкрементального обновления
     u8 md_update_action;// Тип инкрементального обновления 1 - change; 2 - delete
     u8 md_entry_type;   // Тип заявки - 2 - продажа или 1 - покупка
 
@@ -31,3 +37,21 @@ struct OrderExecution : public MessageBase {
         };
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const OrderExecution& order) {
+    os << "====================  OrderExecution packet: ===================\n";
+    os << "ID заявки "<< order.md_entry_id << '\n';
+    os << "Цена заявки "<< order.md_entry_px << '\n';
+    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
+    os << "Цена сделки "<< order.last_px << '\n';
+    os << "Объем сделки "<< order.last_qty << '\n';
+    os << "Идентификатор сделки "<< order.trade_id << '\n';
+    os << "Типы сделок -> битовая маска (TODO) "<< order.md_flags_set << '\n';
+    os << "Числовой идентификатор инструмента "<< order.security_id << '\n';
+    os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
+    os << "Тип инкрементального обновления "<< order.md_update_action << '\n';
+    os << "Тип заявки "<< order.md_entry_type << '\n';
+    os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
+
+    return os;
+}
