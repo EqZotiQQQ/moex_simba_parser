@@ -7,28 +7,46 @@
 #include "sbe/sbe_message.h"
 #include "packet_base.h"
 
-struct IncrementalPacketHeader { // Little endian
+class IncrementalPacketHeader { // Little endian
+    friend std::ostream& operator<<(std::ostream& os, const IncrementalPacketHeader& header);
+private:
     u64 transact_time {};               // Начало процесинга транзакции в матчинге с момента начала эпохи
     u32 exchange_trading_session_ID {}; // ID торговой сессии
-    static constexpr u8 size_bytes {12};
+public:
+    static constexpr u8 size {12};
 
-    static IncrementalPacketHeader parse(std::ifstream& file, Endian endian) {
-        return IncrementalPacketHeader {
-                .transact_time = Parsers::parse_u64(file, endian),
-                .exchange_trading_session_ID = Parsers::parse_u32(file, endian),
-        };
+    IncrementalPacketHeader() {}
+    void parse(std::ifstream& file, Endian endian) {
+        transact_time = Parsers::parse_u64(file, endian);
+        exchange_trading_session_ID = Parsers::parse_u32(file, endian);
     }
 };
 
-struct IncrementalPacket : public PacketBase {
+class IncrementalPacket : public PacketBase {
+    friend std::ostream& operator<<(std::ostream& os, const IncrementalPacket& packet);
+private:
     IncrementalPacketHeader header {};
     std::vector<SBEMessage> sbe_messages {};
+    u64 size {};
+public:
+    explicit IncrementalPacket(u64 len) : size(len) {}
+    u64 parse(std::ifstream& file, Endian endian) {
+        header.parse(file, endian);
+        size -= IncrementalPacketHeader::size;
+        while (size) {
+            SBEMessage sbe_message {};
+            size -= sbe_message.parse(file, endian);
+            sbe_messages.push_back(sbe_message);
+        }
+        return size;
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, const IncrementalPacket& packet) {
     os << "===================== IncrementalPacket ======================\n";
-    for (int i = 0; i < packet.sbe_messages.size(); i++) {
-        os << packet.sbe_messages[i] << '\n';
+    os << packet.header << '\n';
+    for (const auto & sbe_message : packet.sbe_messages) {
+        os << sbe_message << '\n';
     }
     os << "===================== IncrementalPacket end ======================\n";
     return os;

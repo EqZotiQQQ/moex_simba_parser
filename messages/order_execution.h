@@ -1,12 +1,13 @@
 #pragma once
 
 #include <fstream>
-#include "message_base.h"
 #include "../types.h"
 #include "../utils.h"
 #include "../parsers.h"
 
-struct OrderExecution : public MessageBase {
+class OrderExecution {
+    friend std::ostream& operator<<(std::ostream& os, const OrderExecution& order);
+private:
     i64 md_entry_id;    // Идентификатор заявки
     i64 md_entry_px;    // Цена заявки
     i64 md_entry_size;  // Оставшееся количество в заявке
@@ -19,6 +20,7 @@ struct OrderExecution : public MessageBase {
     u8 md_update_action;// Тип инкрементального обновления 1 - change; 2 - delete
     u8 md_entry_type;   // Тип заявки - 2 - продажа или 1 - покупка
 
+public:
     static constexpr u8 size_bytes = 66;
 
     static constexpr u8 day = 0x1; //- Котировочная (Day)
@@ -33,20 +35,18 @@ struct OrderExecution : public MessageBase {
     static constexpr u64 synthetic_order= 0x200000000000; // - Признак синтетической заявки
     static constexpr u64 RFS_order= 0x400000000000; // - Заявка из системы RFS
 
-    static OrderExecution parse(std::ifstream& file, Endian endian) {
-        return OrderExecution {
-                .md_entry_id = Parsers::parse_i64(file, endian),
-                .md_entry_px = Parsers::parse_i64(file, endian),
-                .md_entry_size = Parsers::parse_i64(file, endian),
-                .last_px = Parsers::parse_i64(file, endian),
-                .last_qty = Parsers::parse_i64(file, endian),
-                .trade_id = Parsers::parse_i64(file, endian),
-                .md_flags = Parsers::parse_i64(file, endian),
-                .security_id = Parsers::parse_i32(file, endian),
-                .rpt_seq = Parsers::parse_u32(file, endian),
-                .md_update_action = Parsers::parse_u8(file, endian),
-                .md_entry_type = Parsers::parse_u8(file, endian),
-        };
+    void parse(std::ifstream& file, Endian endian) {
+        md_entry_id = Parsers::parse_i64(file, endian);
+        md_entry_px = Parsers::parse_i64(file, endian);
+        md_entry_size = Parsers::parse_i64(file, endian);
+        last_px = Parsers::parse_i64(file, endian);
+        last_qty = Parsers::parse_i64(file, endian);
+        trade_id = Parsers::parse_i64(file, endian);
+        md_flags = Parsers::parse_i64(file, endian);
+        security_id = Parsers::parse_i32(file, endian);
+        rpt_seq = Parsers::parse_u32(file, endian);
+        md_update_action = Parsers::parse_u8(file, endian);
+        md_entry_type = Parsers::parse_u8(file, endian);
     }
 };
 

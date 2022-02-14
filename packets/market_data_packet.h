@@ -6,12 +6,15 @@
 #include "../messages/order_update.h"
 #include "../parsers.h"
 
-struct MarketDataPacketHeader { // Little endian
+class MarketDataPacketHeader { // Little endian
+    friend std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header);
+private:
     u32 msg_seq_number {};          // Счётчик. ++ когда отправляет сообщение. Ресет раз в сутки
     u16 msg_size {};                // Длина сообщения в байтах
     u16 msg_flags {};               // Флаги. Лучше читать в доке про флаги
     u64 sending_time {};            // Время отправки сообщения шлюзом
-    constexpr static u8 size_bytes {16};
+public:
+    constexpr static u8 size {16};
 
     constexpr static u8 message_fragmentation {0x1};
     constexpr static u8 first_message {0x2};
@@ -19,13 +22,15 @@ struct MarketDataPacketHeader { // Little endian
     constexpr static u8 incremental_message {0x8};
     constexpr static u8 pos_dup_flag {0x10};
 
-    static MarketDataPacketHeader parse_market_data_packet_header(std::ifstream& file, Endian endian) {
-        return MarketDataPacketHeader {
-                .msg_seq_number = Parsers::parse_u32(file, endian),
-                .msg_size = Parsers::parse_u16(file, endian),
-                .msg_flags = Parsers::parse_u16(file, endian),
-                .sending_time = Parsers::parse_u64(file, endian),
-        };
+    void parse(std::ifstream& file, Endian endian) {
+        msg_seq_number = Parsers::parse_u32(file, endian);
+        msg_size = Parsers::parse_u16(file, endian);
+        msg_flags = Parsers::parse_u16(file, endian);
+        sending_time = Parsers::parse_u64(file, endian);
+    }
+
+    bool is_incremental() const noexcept {
+        return (msg_flags & MarketDataPacketHeader::incremental_message) == MarketDataPacketHeader::incremental_message;
     }
 };
 
@@ -45,7 +50,7 @@ std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header)
     if ((header.msg_flags & MarketDataPacketHeader::last_message) == MarketDataPacketHeader::last_message) {
         os << "* 0x4 Последнее сообщение в снапшоте по инструменту\n";
     }
-    if ((header.msg_flags & MarketDataPacketHeader::first_message) == MarketDataPacketHeader::first_message) {
+    if ((header.msg_flags & MarketDataPacketHeader::incremental_message) == MarketDataPacketHeader::incremental_message) {
         os << "* 0x8 Incremental пакет\n";
     } else {
         os << "* !0x8 Snapshot пакет\n";
@@ -55,7 +60,7 @@ std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header)
     } else {
         os << "* !0x10 Трансляция онлайн сообщений\n";
     }
-    os << "Отправлено в: "               << std::dec << static_cast<u64>(header.sending_time) << '\n';
+    os << "Отправлено в: " << std::dec << static_cast<u64>(header.sending_time) << '\n';
     os << "============================== MarketDataPacketHeader end =======================================\n";
     return os;
 }

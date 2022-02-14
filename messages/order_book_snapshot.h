@@ -2,11 +2,12 @@
 
 #include <vector>
 #include "../types.h"
-#include "message_base.h"
 #include "../parsers.h"
 
 
-struct OrderBookSnapshot : public MessageBase {
+class OrderBookSnapshot {
+    friend std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order);
+private:
     i64 md_entry_id;
     u64 transact_time;
     i64 md_entry_px;
@@ -14,8 +15,9 @@ struct OrderBookSnapshot : public MessageBase {
     i64 trade_id;
     u64 md_flags;
     u8 md_entry_type;
+public:
 
-    static constexpr u8 size_bytes = 49;
+    static constexpr u8 size {49};
 
     static constexpr u8 day = 0x1;
     static constexpr u8 ioc = 0x2;
@@ -23,17 +25,15 @@ struct OrderBookSnapshot : public MessageBase {
     static constexpr u8 bid = '0';
     static constexpr u8 ask = '1';
     static constexpr u8 empty_book = 'J';
-
-    static OrderBookSnapshot parse(std::ifstream& file, Endian endian) {
-        return OrderBookSnapshot {
-                .md_entry_id = Parsers::parse_i64(file, endian),
-                .transact_time = Parsers::parse_u64(file, endian),
-                .md_entry_px = Parsers::parse_i64(file, endian),
-                .md_entry_size = Parsers::parse_i64(file, endian),
-                .trade_id = Parsers::parse_i64(file, endian),
-                .md_flags = Parsers::parse_u64(file, endian),
-                .md_entry_type = Parsers::parse_u8(file, endian),
-        };
+public:
+    void parse(std::ifstream& file, Endian endian) {
+        md_entry_id = Parsers::parse_i64(file, endian);
+        transact_time = Parsers::parse_u64(file, endian);
+        md_entry_px = Parsers::parse_i64(file, endian);
+        md_entry_size = Parsers::parse_i64(file, endian);
+        trade_id = Parsers::parse_i64(file, endian);
+        md_flags = Parsers::parse_u64(file, endian);
+        md_entry_type = Parsers::parse_u8(file, endian);
     }
 };
 
@@ -65,7 +65,9 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {    
     return os;
 }
 
-struct OrderBookSnapshotPacket : public MessageBase {
+class OrderBookSnapshotPacket {
+    friend std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order);
+private:
     int32_t security_id;                            //  ID тулзы
     uint32_t last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
     uint32_t rpt_seq;                               //  Порядковый номер инкрементального обновления
@@ -73,23 +75,25 @@ struct OrderBookSnapshotPacket : public MessageBase {
     uint16_t block_len;                             //  Длина блока
     uint8_t no_md_entries;                             //  Размер пачки заявок
     std::vector<OrderBookSnapshot> md_entries;      //  Размер пачки заявок
-
-    static constexpr u8 size_bytes = 19; // total size = 19 + sizeofOrderBookSnapshot * len(bids_slice)
-
-
-    static OrderBookSnapshotPacket parse(std::ifstream& file, Endian endian) {
-        OrderBookSnapshotPacket order_book_snapshot {
-                .security_id = Parsers::parse_i32(file, endian),
-                .last_msg_seq_num_processed = Parsers::parse_u32(file, endian),
-                .rpt_seq = Parsers::parse_u32(file, endian),
-                .exchange_trading_session_id = Parsers::parse_u32(file, endian),
-                .block_len = Parsers::parse_u16(file, endian),
-                .no_md_entries = Parsers::parse_u8(file, endian),
-        };
-        for (int i = 0; i < order_book_snapshot.no_md_entries; i++) {
-            order_book_snapshot.md_entries.push_back(OrderBookSnapshot::parse(file, endian));
+public:
+    static constexpr u8 size = 19; // total size = 19 + sizeofOrderBookSnapshot * len(bids_slice)
+public:
+    void parse(std::ifstream& file, Endian endian) {
+        security_id = Parsers::parse_i32(file, endian);
+        last_msg_seq_num_processed = Parsers::parse_u32(file, endian);
+        rpt_seq = Parsers::parse_u32(file, endian);
+        exchange_trading_session_id = Parsers::parse_u32(file, endian);
+        block_len = Parsers::parse_u16(file, endian);
+        no_md_entries = Parsers::parse_u8(file, endian);
+        for (int i = 0; i < no_md_entries; i++) {
+            OrderBookSnapshot snapshot {};
+            snapshot.parse(file, endian);
+            md_entries.emplace_back(snapshot);
         }
-        return order_book_snapshot;
+    }
+
+    u64 entries() const noexcept {
+        return md_entries.size();
     }
 };
 
@@ -107,6 +111,5 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order)
         os << order.md_entries[i] << '\n';
     }
     os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
-
     return os;
 }

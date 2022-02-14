@@ -2,9 +2,10 @@
 
 #include <vector>
 #include "../types.h"
-#include "message_base.h"
 
-struct OrderUpdate : public MessageBase {
+class OrderUpdate {
+    friend std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap);
+private:
     i64 md_entry_id; // ID заявки
     i64 md_entry_px; // Цена заявки
     i64 md_entry_size; // Объём заявки
@@ -13,7 +14,8 @@ struct OrderUpdate : public MessageBase {
     u32 rpt_seq;      // ID инкремент. обновления
     u8  md_update_action; // Тип инкремент. обновления ( 0 - new; 2 - delete)
     u8  md_entry_type;  // Тип заявки (0 - продажа 1 - покупка)
-
+public:
+    OrderUpdate() {}
     static constexpr u8 size_bytes = 42;
 
     static constexpr u8 day = 0x1; //- Котировочная (Day)
@@ -31,17 +33,15 @@ struct OrderUpdate : public MessageBase {
     static constexpr u64 synthetic_order= 0x200000000000; // - Признак синтетической заявки
     static constexpr u64 RFS_order= 0x400000000000; // - Заявка из системы RFS
 
-    static OrderUpdate parse(std::ifstream& file, Endian endian) {
-        return OrderUpdate {
-               .md_entry_id = Parsers::parse_i64(file, endian),
-               .md_entry_px = Parsers::parse_i64(file, endian),
-               .md_entry_size = Parsers::parse_i64(file, endian),
-               .md_flags = Parsers::parse_u64(file, endian),
-               .security_id = Parsers::parse_i32(file, endian),
-               .rpt_seq = Parsers::parse_u32(file, endian),
-               .md_update_action = Parsers::parse_u8(file, endian),
-               .md_entry_type = Parsers::parse_u8(file, endian),
-        };
+    void parse(std::ifstream& file, Endian endian) {
+        md_entry_id = Parsers::parse_i64(file, endian);
+        md_entry_px = Parsers::parse_i64(file, endian);
+        md_entry_size = Parsers::parse_i64(file, endian);
+        md_flags = Parsers::parse_u64(file, endian);
+        security_id = Parsers::parse_i32(file, endian);
+        rpt_seq = Parsers::parse_u32(file, endian);
+        md_update_action = Parsers::parse_u8(file, endian);
+        md_entry_type = Parsers::parse_u8(file, endian);
     }
 };
 
@@ -99,20 +99,18 @@ std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap) {
 
     os << "ID инструмента: " << pcap.security_id << '\n';
     os << "ID инкрементального обновления: " << pcap.rpt_seq << '\n';
-    os << "Тип инкрементального обновления: " << pcap.md_update_action << '\n';
+    os << "Тип инкрементального обновления: ";
     if (pcap.md_update_action == '0') {
         os << "Создание (New)\n";
     } else if (pcap.md_update_action == '2') {
         os << "Удаление (Delete)\n";
     }
-    os << "ID Тип заявки: " << pcap.md_entry_type << '\n';
-    os << "Тип инкрементального обновления: ";//<< order.md_update_action << '\n';
+    os << "ID Тип заявки: ";
     if (pcap.md_entry_type == '0') {
         os << "Продажа (Bid)\n";
     } else {
         os << "Покупка (Ask)\n";
     }
     os << "+++++++++++++++++++++ OrderUpdate packet end: +++++++++++++++\n";
-
     return os;
 }

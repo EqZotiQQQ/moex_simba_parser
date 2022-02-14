@@ -3,7 +3,23 @@
 #include <fstream>
 #include "../utils.h"
 
-struct SnapshotPacket : public PacketBase {
+class SnapshotPacket {
+friend std::ostream& operator<<(std::ostream& os, const SnapshotPacket& packet);
+private:
     SBEMessage sbe_message;
-    SnapshotPacket(std::ifstream& file, Endian endian): sbe_message(file, endian) {}
+    u64 size {};
+public:
+    SnapshotPacket(u64 size): size(size) {}
+
+    u64 parse(std::ifstream& file, Endian endian) {
+        size -= sbe_message.parse(file, endian);
+        return size;
+    }
 };
+
+std::ostream& operator<<(std::ostream& os, const SnapshotPacket& snapshot_packet) {
+    os << "====================  Snapshot packet layer: ===================\n";
+    os << snapshot_packet.sbe_message << '\n';
+    os << "====================  Snapshot packet end ===================\n";
+    return os;
+}
