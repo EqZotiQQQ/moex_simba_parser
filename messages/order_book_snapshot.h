@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order)
     os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
     os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
     os << "Длина блока "                                 << order.block_len << '\n';
-    os << "Размер пачки заявок "                         << order.no_md_entries << '\n';
+    os << "Количество заявок "           << static_cast<i32>(order.no_md_entries) << '\n';
     for (int i = 0; i < order.no_md_entries; i++) {
         os << "Заявка №" << i << '\n';
         os << order.md_entries[i] << '\n';
