@@ -26,7 +26,7 @@ public:
     }
 
     void parse(std::ifstream& file, Endian endian) {
-        market_data_packet_header.parse(file, endian);
+        market_data_packet_header.parse(file, Endian::little_endian); // little endian only
         packet_length -= MarketDataPacketHeader::size;
         if (market_data_packet_header.is_incremental()) {
             incremental_packet = IncrementalPacket {packet_length};

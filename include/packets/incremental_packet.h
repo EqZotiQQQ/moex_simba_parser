@@ -31,7 +31,7 @@ private:
 public:
     explicit IncrementalPacket(u64 len) : size(len) {}
     u64 parse(std::ifstream& file, Endian endian) {
-        header.parse(file, endian);
+        header.parse(file, Endian::little_endian); // little endian only
         size -= IncrementalPacketHeader::size;
         while (size) {
             SBEMessage sbe_message {};
