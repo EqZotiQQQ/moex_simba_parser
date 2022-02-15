@@ -9,9 +9,9 @@
 #include "packets/snapshot_packet.h"
 #include "packets/sbe/sbe_message.h"
 
-class Packet {
-    friend std::ostream& operator<<(std::ostream& os, const Packet& packet);
-    friend std::ofstream& operator<<(std::ofstream& os, const Packet& packet);
+class MarketDataPacket {
+    friend std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet);
+    friend std::ofstream& operator<<(std::ofstream& os, const MarketDataPacket& packet);
 private:
     u64 packet_length {};
     MarketDataPacketHeader market_data_packet_header {};
@@ -19,7 +19,7 @@ private:
     std::optional<SnapshotPacket> snapshot_packet;
 public:
 
-    Packet() {}
+    MarketDataPacket() {}
 
     void set_len(u64 len) {
         packet_length = len;
@@ -39,7 +39,7 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const Packet& packet) {
+std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet) {
     os << "== Packet layer: ==\n";
     os << packet.market_data_packet_header << '\n';
     if (packet.market_data_packet_header.is_incremental()) {
@@ -51,7 +51,7 @@ std::ostream& operator<<(std::ostream& os, const Packet& packet) {
     return os;
 }
 
-std::ofstream& operator<<(std::ofstream& os, const Packet& packet) {
+std::ofstream& operator<<(std::ofstream& os, const MarketDataPacket& packet) {
     os << "== Packet layer: ==\n";
     os << packet.market_data_packet_header << std::endl;
     if (packet.market_data_packet_header.is_incremental()) {

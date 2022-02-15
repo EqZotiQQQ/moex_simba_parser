@@ -11,6 +11,7 @@
 #include "types/constants.h"
 #include "utils/parsers.h"
 #include "udp.h"
+#include "pcap_header.h"
 
 class IPHeader {
     friend std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header);
@@ -62,7 +63,7 @@ class IPPacket {
     friend std::ostream& operator<<(std::ostream& os, const IPPacket& ip);
 private:
     IPHeader ip_header;
-    UDPPacket udp_packet;
+    PcapPacket pcap_parser;
     u32 bound {};
     Endian endian {};
     u32 i {};
@@ -74,21 +75,21 @@ public:
         out << ip_header;
         while (i < bound && !file.eof()) {
             out << "Packet number " << ++i << '\n';
-            udp_packet.parse(file, endian);
-            out << udp_packet << std::endl;
+            pcap_parser.parse(file, endian);
+            out << pcap_parser << std::endl;
         }
     }
 };
 
 std::ostream& operator<<(std::ostream& os, const IPPacket& ip) {
     os << ip.ip_header << '\n';
-    os << ip.udp_packet << '\n';
+    os << ip.pcap_parser << '\n';
     return os;
 }
 
 std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip) {
-    os << ip.ip_header;
-    os << ip.udp_packet;
+    os << ip.ip_header << std::endl;
+    os << ip.pcap_parser << std::endl;
     return os;
 }
 
