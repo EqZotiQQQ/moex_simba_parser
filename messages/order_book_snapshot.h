@@ -7,6 +7,7 @@
 
 class OrderBookSnapshot {
     friend std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order);
+    friend std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshot& order);
 private:
     i64 md_entry_id;
     u64 transact_time;
@@ -37,36 +38,9 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {    os << "====================  OrderExecution packet: ===================\n";
-    os << "ID заявки "<< order.md_entry_id << '\n';
-    os << "Время заявки "<< order.transact_time << '\n';
-    os << "Цена заявки "<< order.md_entry_px << '\n';
-    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
-    os << "Идентификатор сделки "<< order.trade_id << '\n';
-    os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
-    if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
-        os << "Котировочная сделка (Day)\n";
-    }
-    if ((order.md_flags & OrderBookSnapshot::ioc) == OrderBookSnapshot::ioc) {
-        os << "Встречная сделка (IOC)\n";
-    }
-
-    os << "Тип заявки ";//<< order.md_entry_type << '\n';
-    if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
-        os << "Продажа (Bid)\n";
-    } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
-        os << "Покупка (Ask)\n";
-    } else if ((order.md_entry_type & OrderBookSnapshot::empty_book) == OrderBookSnapshot::empty_book) {
-        os << "Пустой стакан\n";
-    }
-
-    os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
-
-    return os;
-}
-
 class OrderBookSnapshotPacket {
     friend std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order);
+    friend std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshotPacket& order);
 private:
     int32_t security_id;                            //  ID тулзы
     uint32_t last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
@@ -97,8 +71,63 @@ public:
     }
 };
 
+std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
+    os << "==  OrderBookSnapshot packet: ==\n";
+    os << "ID заявки "<< order.md_entry_id << '\n';
+    os << "Время заявки "<< order.transact_time << '\n';
+    os << "Цена заявки "<< order.md_entry_px << '\n';
+    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
+    os << "Идентификатор сделки "<< order.trade_id << '\n';
+    os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
+    if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
+        os << "Котировочная сделка (Day)\n";
+    }
+    if ((order.md_flags & OrderBookSnapshot::ioc) == OrderBookSnapshot::ioc) {
+        os << "Встречная сделка (IOC)\n";
+    }
+    os << "Тип заявки ";//<< order.md_entry_type << '\n';
+    if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
+        os << "Продажа (Bid)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
+        os << "Покупка (Ask)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::empty_book) == OrderBookSnapshot::empty_book) {
+        os << "Пустой стакан\n";
+    }
+    os << "== OrderBookSnapshot packet end: ==\n";
+    return os;
+}
+
+
+std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshot& order) {
+    os << "== OrderBookSnapshot packet: ==\n";
+    os << "ID заявки "<< order.md_entry_id << '\n';
+    os << "Время заявки "<< order.transact_time << '\n';
+    os << "Цена заявки "<< order.md_entry_px << '\n';
+    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
+    os << "Идентификатор сделки "<< order.trade_id << '\n';
+    os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
+    if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
+        os << "Котировочная сделка (Day)\n";
+    }
+    if ((order.md_flags & OrderBookSnapshot::ioc) == OrderBookSnapshot::ioc) {
+        os << "Встречная сделка (IOC)\n";
+    }
+    os << "Тип заявки ";//<< order.md_entry_type << '\n';
+    if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
+        os << "Продажа (Bid)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
+        os << "Покупка (Ask)\n";
+    } else if ((order.md_entry_type & OrderBookSnapshot::empty_book) == OrderBookSnapshot::empty_book) {
+        os << "Пустой стакан\n";
+    }
+
+    os << "== OrderBookSnapshot packet end: ==\n";
+
+    return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order) {
-    os << "====================  OrderExecution packet: ===================\n";
+    os << "== OrderBookSnapshot packet: ==\n";
     os << std::dec;
     os << "Числовой идентификатор инструмента "          << order.security_id << '\n';
     os << "Последнее обработанное сообщение "            << order.last_msg_seq_num_processed << '\n';
@@ -110,6 +139,23 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order)
         os << "Заявка №" << i << '\n';
         os << order.md_entries[i] << '\n';
     }
-    os << "+++++++++++++++++++++ OrderExecution packet end: +++++++++++++++\n";
+    os << "== OrderBookSnapshot packet end: ==\n";
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshotPacket& order) {
+    os << "== OrderBookSnapshot packet: ==\n";
+    os << std::dec;
+    os << "Числовой идентификатор инструмента "          << order.security_id << '\n';
+    os << "Последнее обработанное сообщение "            << order.last_msg_seq_num_processed << '\n';
+    os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
+    os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
+    os << "Длина блока "                                 << order.block_len << '\n';
+    os << "Количество заявок "           << static_cast<i32>(order.no_md_entries) << '\n';
+    for (int i = 0; i < order.no_md_entries; i++) {
+        os << "Заявка №" << i << '\n';
+        os << order.md_entries[i] << std::endl;
+    }
+    os << "== OrderBookSnapshot packet end: ==\n";
     return os;
 }

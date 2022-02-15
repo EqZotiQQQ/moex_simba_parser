@@ -10,7 +10,8 @@
 #include "packets/sbe/sbe_message.h"
 
 class Packet {
-    friend std::ostream& operator<<(std::ostream& os, const Packet& pcap);
+    friend std::ostream& operator<<(std::ostream& os, const Packet& packet);
+    friend std::ofstream& operator<<(std::ofstream& os, const Packet& packet);
 private:
     u64 packet_length {};
     MarketDataPacketHeader market_data_packet_header {};
@@ -40,13 +41,25 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Packet& packet) {
-    os << "====================  Packet layer: ===================\n";
+    os << "== Packet layer: ==\n";
     os << packet.market_data_packet_header << '\n';
     if (packet.incremental_packet) {
         os << packet.incremental_packet.value() << '\n';
     } else {
         os << packet.snapshot_packet.value() << '\n';
     }
-    os << "====================  Packet layer end ===================\n";
+    os << "==  Packet layer end ==\n";
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const Packet& packet) {
+    os << "== Packet layer: ==\n";
+    os << packet.market_data_packet_header << std::endl;
+    if (packet.incremental_packet) {
+        os << packet.incremental_packet.value() << std::endl;
+    } else {
+        os << packet.snapshot_packet.value() << std::endl;
+    }
+    os << "==  Packet layer end ==\n";
     return os;
 }

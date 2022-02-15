@@ -12,6 +12,8 @@
 #include "udp.h"
 
 class IPHeader {
+    friend std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header);
+    friend std::ostream& operator<<(std::ostream& os, const IPHeader& pcap);
 private:
     u32 magic_number {};
     u16 version_major {};
@@ -26,7 +28,6 @@ private:
 public:
     static constexpr u8 size = {24};
 
-    friend std::ostream& operator<<(std::ostream& os, const IPHeader& pcap);
     Endian parse(std::ifstream& file) {
         std::array<int, 4> buffer {};
         for (int i = 0; i < 4; i++) {
@@ -56,21 +57,26 @@ public:
 };
 
 class IPPacket {
+    friend std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip);
+    friend std::ostream& operator<<(std::ostream& os, const IPPacket& ip);
+private:
     IPHeader ip_header;
     UDPPacket udp_packet;
     Endian endian {};
-friend std::ostream& operator<<(std::ostream& os, const IPPacket& ip);
 public:
     IPPacket() {}
 
-    void parse(std::ifstream& file) {
+    void parse(std::ifstream& file, std::ofstream& out) {
         endian = ip_header.parse(file);
         int i {};
+        out << ip_header;
         while (!file.eof()) {
-            i++;
-            std::cout << "================================ Packet number " << i << '\n';
+            out << "Packet number " << ++i << '\n';
             udp_packet.parse(file, endian);
-            std::cout << udp_packet << '\n';
+            out << udp_packet << std::endl;
+            if (i == 1000) {
+                break;
+            }
         }
     }
 };
@@ -78,6 +84,12 @@ public:
 std::ostream& operator<<(std::ostream& os, const IPPacket& ip) {
     os << ip.ip_header << '\n';
     os << ip.udp_packet << '\n';
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip) {
+    os << ip.ip_header;
+    os << ip.udp_packet;
     return os;
 }
 
@@ -90,6 +102,20 @@ std::ostream& operator<<(std::ostream& os, const IPHeader& pcap) {
     os << "Sig figs: " << pcap.sig_figs << '\n';
     os << "Snap len: " << pcap.snap_len << '\n';
     os << "Network: " << pcap.network << '\n';
+    os << "===============IP Header end==============\n";
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header) {
+    os << "===============IP Header=================\n";
+    os << std::setw(2) << std::right << std::hex << "Magic numer: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
+    os << std::dec;
+    os << "Version Major: " << ip_header.version_major << '\n';
+    os << "Version Minor: " << ip_header.version_minor << '\n';
+    os << "Time zone: " << ip_header.time_zone << '\n';
+    os << "Sig figs: " << ip_header.sig_figs << '\n';
+    os << "Snap len: " << ip_header.snap_len << '\n';
+    os << "Network: " << ip_header.network << '\n';
     os << "===============IP Header end==============\n";
     return os;
 }

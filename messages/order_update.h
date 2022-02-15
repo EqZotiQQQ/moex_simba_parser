@@ -5,6 +5,7 @@
 
 class OrderUpdate {
     friend std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap);
+    friend std::ofstream& operator<<(std::ofstream& os, const OrderUpdate& pcap);
 private:
     i64 md_entry_id; // ID заявки
     i64 md_entry_px; // Цена заявки
@@ -46,7 +47,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap) {
-    os << "====================  OrderUpdate packet: ===================\n";
+    os << "==  OrderUpdate packet: ==\n";
     os << std::dec;
     os << "ID заявки: " << pcap.md_entry_id << '\n';
     os << "Цена заявки: " << pcap.md_entry_px << '\n';
@@ -111,6 +112,76 @@ std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap) {
     } else {
         os << "Покупка (Ask)\n";
     }
-    os << "+++++++++++++++++++++ OrderUpdate packet end: +++++++++++++++\n";
+    os << "== OrderUpdate packet end: ==\n";
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const OrderUpdate& pcap) {
+    os << "==  OrderUpdate packet: ==\n";
+    os << std::dec;
+    os << "ID заявки: " << pcap.md_entry_id << '\n';
+    os << "Цена заявки: " << pcap.md_entry_px << '\n';
+    os << "Объём заявки: " << pcap.md_entry_size << '\n';
+    os << "Тип заявки (битовая маска):\n";// << pcap.md_flags << '\n';
+
+    if ((pcap.md_flags & OrderUpdate::day) == OrderUpdate::day) {
+        os << "* 0x1 Котировочная\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::IOC) == OrderUpdate::IOC) {
+        os << "* 0x2 Встречная\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::OTC) == OrderUpdate::OTC) {
+        os << "* 0x4 Внесистемная заявка\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::end_of_transaction) == OrderUpdate::end_of_transaction) {
+        os << "* 0x1000 - Признак последней записи в транзакции матчинга\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::fill_or_kill) == OrderUpdate::fill_or_kill) {
+        os << "* 0x80000 - Заявка Fill-or-Kill\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::order_move_result) == OrderUpdate::order_move_result) {
+        os << "* 0x100000 - Запись является результатом перемещениязаявки\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::cancel_result) == OrderUpdate::cancel_result) {
+        os << "* 0x200000 - Запись является результатом удаления заявки\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::mass_cancel_result) == OrderUpdate::mass_cancel_result) {
+        os << "* 0x400000 - Запись является результатом группового удаления заявок\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::negotiated_order) == OrderUpdate::negotiated_order) {
+        os << "* 0x4000000 - Признак адресной заявки\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::multi_leg_order) == OrderUpdate::multi_leg_order) {
+        os << "* 0x8000000 - Признак заявки по связке\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::sign_of_order_deletion_due_to_a_cross_trade) ==
+        OrderUpdate::sign_of_order_deletion_due_to_a_cross_trade) {
+        os << "* 0x20000000 - Признак удаления остатка заявки по причине кросс-сделки\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::cancel_of_disconnect_result) == OrderUpdate::cancel_of_disconnect_result) {
+        os << "* 0x100000000 - Запись является результатом отмены заявок сервисом Cancel on Disconnect\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::synthetic_order) == OrderUpdate::synthetic_order) {
+        os << "* 0x200000000000 - Признак синтетической заявки\n";
+    }
+    if ((pcap.md_flags & OrderUpdate::RFS_order) == OrderUpdate::RFS_order) {
+        os << "* 0x400000000000 - Заявка из системы RFS\n";
+    }
+
+    os << "ID инструмента: " << pcap.security_id << '\n';
+    os << "ID инкрементального обновления: " << pcap.rpt_seq << '\n';
+    os << "Тип инкрементального обновления: ";
+    if (pcap.md_update_action == '0') {
+        os << "Создание (New)\n";
+    } else if (pcap.md_update_action == '2') {
+        os << "Удаление (Delete)\n";
+    }
+    os << "ID Тип заявки: ";
+    if (pcap.md_entry_type == '0') {
+        os << "Продажа (Bid)\n";
+    } else {
+        os << "Покупка (Ask)\n";
+    }
+    os << "== OrderUpdate packet end: ==\n";
     return os;
 }
