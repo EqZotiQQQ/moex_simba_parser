@@ -2,9 +2,8 @@
 
 #include <vector>
 #include <fstream>
-#include "../types.h"
-#include "../utils.h"
-#include "../parsers.h"
+#include "types/typenames.h"
+#include "utils/parsers.h"
 
 class BestPricesOrderPayload {
 private:

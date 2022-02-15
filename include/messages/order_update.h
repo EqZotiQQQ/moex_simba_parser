@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "../types.h"
+#include "../types/typenames.h"
 
 class OrderUpdate {
     friend std::ostream& operator<<(std::ostream& os, const OrderUpdate& pcap);
@@ -173,7 +173,7 @@ std::ofstream& operator<<(std::ofstream& os, const OrderUpdate& pcap) {
     os << "Тип инкрементального обновления: ";
     if (pcap.md_update_action == '0') {
         os << "Создание (New)\n";
-    } else if (pcap.md_update_action == '2') {
+    } else {
         os << "Удаление (Delete)\n";
     }
     os << "ID Тип заявки: ";

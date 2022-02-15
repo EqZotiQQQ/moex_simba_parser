@@ -5,11 +5,11 @@
 #include <fstream>
 #include <vector>
 
-#include "utils.h"
-#include "types.h"
+#include "types/typenames.h"
 
 
 class Parsers {
+    // TODO parse group of bytes to reduce fragmentation's
 public:
     static u8 parse_u8(std::ifstream& file, Endian endian) {
         return static_cast<u8>(file.get());

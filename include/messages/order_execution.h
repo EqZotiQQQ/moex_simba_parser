@@ -1,9 +1,8 @@
 #pragma once
 
 #include <fstream>
-#include "../types.h"
-#include "../utils.h"
-#include "../parsers.h"
+#include "types/typenames.h"
+#include "utils/parsers.h"
 
 class OrderExecution {
     friend std::ostream& operator<<(std::ostream& os, const OrderExecution& order);
@@ -55,9 +54,17 @@ std::ostream& operator<<(std::ostream& os, const OrderExecution& order) {
     os << "==  OrderExecution packet: ==\n";
     os << std::dec;
     os << "ID заявки "<< order.md_entry_id << '\n';
-    os << "Цена заявки "<< order.md_entry_px << '\n';
-    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
-    os << "Цена сделки "<< order.last_px << '\n';
+    if (order.md_entry_px == DECIMAL5_NULL) {
+        os << "Цена заявки: null\n";
+    } else {
+        os << "Цена заявки: " << order.md_entry_px * 0.00001 << "\n";
+    }
+    if (order.md_entry_size == INT64_NULL) {
+        os << "Цена заявки: null\n";
+    } else {
+        os << "Цена заявки: " << order.md_entry_size << "\n";
+    }
+    os << "Цена сделки "<< order.last_px * 0.00001 << '\n';
     os << "Объем сделки "<< order.last_qty << '\n';
     os << "Идентификатор сделки "<< order.trade_id << '\n';
     os << "Типы сделок (битовая маска):\n";// (TODO) "<< order.md_flags << '\n';
@@ -117,8 +124,16 @@ std::ofstream& operator<<(std::ofstream& os, const OrderExecution& order) {
     os << "==  OrderExecution packet: ==\n";
     os << std::dec;
     os << "ID заявки "<< order.md_entry_id << '\n';
-    os << "Цена заявки "<< order.md_entry_px << '\n';
-    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
+    if (order.md_entry_px == DECIMAL5_NULL) {
+        os << "Цена заявки: null\n";
+    } else {
+        os << "Цена заявки: " << order.md_entry_size << "\n";
+    }
+    if (order.md_entry_size == INT64_NULL) {
+        os << "Цена заявки: null\n";
+    } else {
+        os << "Цена заявки: " << order.md_entry_size << "\n";
+    }
     os << "Цена сделки "<< order.last_px << '\n';
     os << "Объем сделки "<< order.last_qty << '\n';
     os << "Идентификатор сделки "<< order.trade_id << '\n';

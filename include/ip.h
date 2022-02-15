@@ -6,9 +6,10 @@
 #include <iomanip>
 #include <unordered_map>
 
-#include "types.h"
-#include "constants.h"
-#include "parsers.h"
+#include "types/enumerations.h"
+#include "types/typenames.h"
+#include "types/constants.h"
+#include "utils/parsers.h"
 #include "udp.h"
 
 class IPHeader {
@@ -47,10 +48,10 @@ public:
 
     void validate_endians() {
         switch (magic_number) {
-            case Constants::little_endian_milliseconds: endian = Endian::big_endian;
-            case Constants::little_endian_nanoseconds: endian = Endian::big_endian; break;
-            case Constants::big_endian_milliseconds: endian = Endian::little_endian;
-            case Constants::big_endian_nanoseconds: endian = Endian::little_endian; break;
+            case Constants::little_endian_milliseconds:
+            case Constants::little_endian_nanoseconds: endian = Endian::little_endian; break;
+            case Constants::big_endian_milliseconds:
+            case Constants::big_endian_nanoseconds: endian = Endian::big_endian; break;
             default: throw InvalidMagicNumberException();
         }
     }
@@ -62,21 +63,19 @@ class IPPacket {
 private:
     IPHeader ip_header;
     UDPPacket udp_packet;
+    u32 bound {};
     Endian endian {};
+    u32 i {};
 public:
-    IPPacket() {}
+    IPPacket(u32 bound): bound(bound) {}
 
     void parse(std::ifstream& file, std::ofstream& out) {
         endian = ip_header.parse(file);
-        int i {};
         out << ip_header;
-        while (!file.eof()) {
+        while (i < bound && !file.eof()) {
             out << "Packet number " << ++i << '\n';
             udp_packet.parse(file, endian);
             out << udp_packet << std::endl;
-            if (i == 1000) {
-                break;
-            }
         }
     }
 };
@@ -93,29 +92,34 @@ std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const IPHeader& pcap) {
-    os << "===============IP Header=================\n";
-    os << std::setw(2) << std::right << std::hex << "Magic numer: " << ((pcap.magic_number >> 24)&0xFF) << ' ' << ((pcap.magic_number >> 16)&0xFF) << ' ' << ((pcap.magic_number >> 8)&0xFF) << ' ' << ((pcap.magic_number)&0xFF) << '\n';
-    os << "Version Major: " << std::dec << pcap.version_major << '\n';
-    os << "Version Minor: " << pcap.version_minor << '\n';
-    os << "Time zone: " << pcap.time_zone << '\n';
-    os << "Sig figs: " << pcap.sig_figs << '\n';
-    os << "Snap len: " << pcap.snap_len << '\n';
-    os << "Network: " << pcap.network << '\n';
-    os << "===============IP Header end==============\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header) {
-    os << "===============IP Header=================\n";
-    os << std::setw(2) << std::right << std::hex << "Magic numer: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
+std::ostream& operator<<(std::ostream& os, const IPHeader& ip_header) {
+    os << "== IP Header ==\n";
+    os << std::setw(2) << std::right << std::hex;
+    os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
     os << std::dec;
+    os << "Endian: " << endian_type[ip_header.magic_number] << '\n';
     os << "Version Major: " << ip_header.version_major << '\n';
     os << "Version Minor: " << ip_header.version_minor << '\n';
     os << "Time zone: " << ip_header.time_zone << '\n';
     os << "Sig figs: " << ip_header.sig_figs << '\n';
     os << "Snap len: " << ip_header.snap_len << '\n';
     os << "Network: " << ip_header.network << '\n';
-    os << "===============IP Header end==============\n";
+    os << "== IP Header end ==\n";
+    return os;
+}
+
+std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header) {
+    os << "== IP Header ==\n";
+    os << std::setw(2) << std::right << std::hex;
+    os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
+    os << std::dec;
+    os << "Endian: " << endian_type[ip_header.magic_number] << '\n';
+    os << "Version Major: " << ip_header.version_major << '\n';
+    os << "Version Minor: " << ip_header.version_minor << '\n';
+    os << "Time zone: " << ip_header.time_zone << '\n';
+    os << "Sig figs: " << ip_header.sig_figs << '\n';
+    os << "Snap len: " << ip_header.snap_len << '\n';
+    os << "Network: " << ip_header.network << '\n';
+    os << "== IP Header end ==\n";
     return os;
 }

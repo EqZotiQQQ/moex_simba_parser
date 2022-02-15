@@ -2,11 +2,11 @@
 
 #include <ostream>
 #include <optional>
-#include "types.h"
+#include "types/typenames.h"
 #include "packets/market_data_packet.h"
 #include "packets/incremental_packet.h"
 #include "packets/snapshot_packet.h"
-#include "simba_bin_decoder.h"
+#include "packet.h"
 
 class RecordHeader {
     friend std::ostream& operator<<(std::ostream& os, const RecordHeader& record_header);

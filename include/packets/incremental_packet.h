@@ -1,11 +1,9 @@
 #pragma once
 
 #include <fstream>
-#include "../types.h"
-#include "../utils.h"
-#include "../parsers.h"
+#include "types/typenames.h"
+#include "utils/parsers.h"
 #include "sbe/sbe_message.h"
-#include "packet_base.h"
 
 class IncrementalPacketHeader { // Little endian
     friend std::ostream& operator<<(std::ostream& os, const IncrementalPacketHeader& header);
@@ -23,7 +21,7 @@ public:
     }
 };
 
-class IncrementalPacket : public PacketBase {
+class IncrementalPacket {
     friend std::ostream& operator<<(std::ostream& os, const IncrementalPacket& packet);
     friend std::ofstream& operator<<(std::ofstream& os, const IncrementalPacket& packet);
 private:
@@ -65,8 +63,9 @@ std::ostream& operator<<(std::ostream& os, const IncrementalPacketHeader& header
 std::ofstream& operator<<(std::ofstream& os, const IncrementalPacket& packet) {
     os << "== IncrementalPacket ==\n";
     os << packet.header << std::endl;
-    for (const auto & sbe_message : packet.sbe_messages) {
-        os << sbe_message << std::endl;
+    for (int i = 0; i < packet.sbe_messages.size(); i++) {
+        os << "Номер SBE сообщения: " << i + 1 << '\n';
+        os << packet.sbe_messages[i] << std::endl;
     }
     os << "== IncrementalPacket end ==\n";
     return os;

@@ -4,14 +4,13 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
-#include "../../types.h"
-#include "../../utils.h"
-#include "../../parsers.h"
-#include "../../messages/order_update.h"
-#include "../../ip.h"
-#include "../../messages/order_execution.h"
-#include "../../messages/order_book_snapshot.h"
-#include "../../messages/order_best_prices.h"
+#include "types/typenames.h"
+#include "utils/parsers.h"
+#include "messages/order_update.h"
+#include "ip.h"
+#include "messages/order_execution.h"
+#include "messages/order_book_snapshot.h"
+#include "messages/order_best_prices.h"
 
 struct MessageId {
     u16 template_id {};
@@ -139,10 +138,11 @@ std::ostream& operator<<(std::ostream& os, const SBEHeader& header) {
 
 std::ofstream& operator<<(std::ofstream& os, const SBEHeader& header) {
     os << "== SBEHeader ==\n";
-    os << "Длина блока: "       << std::dec << static_cast<u32>(header.block_length) << '\n';
-    os << "Template ID: "       << std::dec << static_cast<u16>(header.template_ID) << '\n';
-    os << "Schema ID: "         << std::dec << static_cast<u16>(header.schema_ID) << '\n';
-    os << "Version: "           << std::dec << static_cast<u64>(header.version) << '\n';
+    os << std::dec;
+    os << "Длина блока: "       << static_cast<u32>(header.block_length) << '\n';
+    os << "Template ID: "       << message_type.at(header.template_ID) << '\n';
+    os << "Schema ID: "         << static_cast<u16>(header.schema_ID) << '\n';
+    os << "Version: "           << static_cast<u64>(header.version) << '\n';
     os << "== SBEHeader end ==\n";
     return os;
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <fstream>
-#include "../utils.h"
 
 class SnapshotPacket {
 friend std::ostream& operator<<(std::ostream& os, const SnapshotPacket& packet);

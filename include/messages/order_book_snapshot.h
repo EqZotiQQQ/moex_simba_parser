@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "../types.h"
-#include "../parsers.h"
+#include "types/typenames.h"
+#include "types/enumerations.h"
+#include "utils/parsers.h"
 
 
 class OrderBookSnapshot {
@@ -47,7 +48,7 @@ private:
     uint32_t rpt_seq;                               //  Порядковый номер инкрементального обновления
     uint32_t exchange_trading_session_id;           //  ID торговой сделки
     uint16_t block_len;                             //  Длина блока
-    uint8_t no_md_entries;                             //  Размер пачки заявок
+    uint8_t no_md_entries;                          //  Размер пачки заявок
     std::vector<OrderBookSnapshot> md_entries;      //  Размер пачки заявок
 public:
     static constexpr u8 size = 19; // total size = 19 + sizeofOrderBookSnapshot * len(bids_slice)
@@ -73,11 +74,30 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
     os << "==  OrderBookSnapshot packet: ==\n";
-    os << "ID заявки "<< order.md_entry_id << '\n';
-    os << "Время заявки "<< order.transact_time << '\n';
-    os << "Цена заявки "<< order.md_entry_px << '\n';
-    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
-    os << "Идентификатор сделки "<< order.trade_id << '\n';
+    if (order.md_entry_id == INT64_NULL) {
+        os << "ID заявки: Null"<< '\n';
+    } else {
+        os << "ID заявки: "<< order.md_entry_id << '\n';
+    }
+    os << "Время заявки: "<< order.transact_time << '\n';
+    if (order.md_entry_px == DECIMAL5_NULL) {
+        os << "Цена заявки: Null\n";
+    } else {
+        os << "Цена заявки: "<< order.md_entry_px * 0.00001 << '\n';
+    }
+
+    if (order.md_entry_size == INT64_NULL) {
+        os << "Оставшееся количество в заявке: Null\n";
+    } else {
+        os << "Оставшееся количество в заявке: "<< order.md_entry_size << '\n';
+    }
+
+    if (order.trade_id == INT64_NULL) {
+        os << "Идентификатор сделки: Null\n";
+    } else {
+        os << "Идентификатор сделки: "<< order.trade_id << '\n';
+    }
+
     os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
     if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
         os << "Котировочная сделка (Day)\n";
@@ -88,6 +108,7 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
     os << "Тип заявки ";//<< order.md_entry_type << '\n';
     if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
         os << "Продажа (Bid)\n";
+
     } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
         os << "Покупка (Ask)\n";
     } else if ((order.md_entry_type & OrderBookSnapshot::empty_book) == OrderBookSnapshot::empty_book) {
@@ -100,19 +121,39 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshot& order) {
 
 std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshot& order) {
     os << "== OrderBookSnapshot packet: ==\n";
-    os << "ID заявки "<< order.md_entry_id << '\n';
-    os << "Время заявки "<< order.transact_time << '\n';
-    os << "Цена заявки "<< order.md_entry_px << '\n';
-    os << "Оставшееся количество в заявке "<< order.md_entry_size << '\n';
-    os << "Идентификатор сделки "<< order.trade_id << '\n';
-    os << "Типы сделок: "; // -> битовая маска (TODO) "<< order.md_flags << '\n';
+    if (order.md_entry_id == INT64_NULL) {
+        os << "ID заявки: Null"<< '\n';
+    } else {
+        os << "ID заявки: "<< order.md_entry_id << '\n';
+    }
+    os << "Время заявки: "<< order.transact_time << '\n';
+
+    if (order.md_entry_px == DECIMAL5_NULL) {
+        os << "Цена заявки: Null\n";
+    } else {
+        os << "Цена заявки: "<< order.md_entry_px * 0.00001 << '\n';
+    }
+
+
+    if (order.md_entry_size == INT64_NULL) {
+        os << "Оставшееся количество в заявке: Null\n";
+    } else {
+        os << "Оставшееся количество в заявке: "<< order.md_entry_size << '\n';
+    }
+
+    if (order.trade_id == INT64_NULL) {
+        os << "Идентификатор сделки: Null\n";
+    } else {
+        os << "Идентификатор сделки: "<< order.trade_id << '\n';
+    }
+    os << "Типы сделок: ";
     if ((order.md_flags & OrderBookSnapshot::day) == OrderBookSnapshot::day) {
         os << "Котировочная сделка (Day)\n";
     }
     if ((order.md_flags & OrderBookSnapshot::ioc) == OrderBookSnapshot::ioc) {
         os << "Встречная сделка (IOC)\n";
     }
-    os << "Тип заявки ";//<< order.md_entry_type << '\n';
+    os << "Тип заявки: " << md_entry_type.at(order.md_entry_type) << ' ';
     if ((order.md_entry_type & OrderBookSnapshot::bid) == OrderBookSnapshot::bid) {
         os << "Продажа (Bid)\n";
     } else if ((order.md_entry_type & OrderBookSnapshot::ask) == OrderBookSnapshot::ask) {
@@ -129,14 +170,14 @@ std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshot& order) {
 std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order) {
     os << "== OrderBookSnapshot packet: ==\n";
     os << std::dec;
-    os << "Числовой идентификатор инструмента "          << order.security_id << '\n';
-    os << "Последнее обработанное сообщение "            << order.last_msg_seq_num_processed << '\n';
-    os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
-    os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
-    os << "Длина блока "                                 << order.block_len << '\n';
-    os << "Количество заявок "           << static_cast<i32>(order.no_md_entries) << '\n';
+    os << "Числовой идентификатор инструмента "          << static_cast<i32>(order.security_id) << '\n';
+    os << "Последнее обработанное сообщение "            << static_cast<i32>(order.last_msg_seq_num_processed) << '\n';
+    os << "Порядковый номер инкрементального обновления "<< static_cast<i32>(order.rpt_seq) << '\n';
+    os << "ID торговой сделки "                          << static_cast<i32>(order.exchange_trading_session_id) << '\n';
+    os << "Длина блока "                                 << static_cast<i32>(order.block_len) << '\n';
+    os << "Количество заявок "                           << static_cast<i32>(order.no_md_entries) << '\n';
     for (int i = 0; i < order.no_md_entries; i++) {
-        os << "Заявка №" << i << '\n';
+        os << "Заявка №" << i + 1 << '\n';
         os << order.md_entries[i] << '\n';
     }
     os << "== OrderBookSnapshot packet end: ==\n";
@@ -146,12 +187,12 @@ std::ostream& operator<<(std::ostream& os, const OrderBookSnapshotPacket& order)
 std::ofstream& operator<<(std::ofstream& os, const OrderBookSnapshotPacket& order) {
     os << "== OrderBookSnapshot packet: ==\n";
     os << std::dec;
-    os << "Числовой идентификатор инструмента "          << order.security_id << '\n';
-    os << "Последнее обработанное сообщение "            << order.last_msg_seq_num_processed << '\n';
-    os << "Порядковый номер инкрементального обновления "<< order.rpt_seq << '\n';
-    os << "ID торговой сделки "                          << order.exchange_trading_session_id << '\n';
-    os << "Длина блока "                                 << order.block_len << '\n';
-    os << "Количество заявок "           << static_cast<i32>(order.no_md_entries) << '\n';
+    os << "Числовой идентификатор инструмента "          << static_cast<i32>(order.security_id) << '\n';
+    os << "Последнее обработанное сообщение "            << static_cast<i32>(order.last_msg_seq_num_processed) << '\n';
+    os << "Порядковый номер инкрементального обновления "<< static_cast<i32>(order.rpt_seq) << '\n';
+    os << "ID торговой сделки "                          << static_cast<i32>(order.exchange_trading_session_id) << '\n';
+    os << "Длина блока "                                 << static_cast<i32>(order.block_len) << '\n';
+    os << "Количество заявок "                           << static_cast<i32>(order.no_md_entries) << '\n';
     for (int i = 0; i < order.no_md_entries; i++) {
         os << "Заявка №" << i << '\n';
         os << order.md_entries[i] << std::endl;

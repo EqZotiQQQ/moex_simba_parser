@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../types.h"
-#include "../messages/order_book_snapshot.h"
-#include "../messages/order_execution.h"
-#include "../messages/order_update.h"
-#include "../parsers.h"
+#include "types/typenames.h"
+#include "messages/order_book_snapshot.h"
+#include "messages/order_execution.h"
+#include "messages/order_update.h"
+#include "utils/parsers.h"
 
 class MarketDataPacketHeader { // Little endian
     friend std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header);
@@ -37,9 +37,10 @@ public:
 
 std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header) {
     os << "== MarketDataPacketHeader: ==\n";
-    os << "Порядковый номер сообщения: " << std::dec << static_cast<u32>(header.msg_seq_number) << '\n';
-    os << "Размер сообщения: "           << std::dec << static_cast<u16>(header.msg_size) << '\n';
-    os << "Флаги сообщения:\n";//            << std::dec << static_cast<u16>(header.msg_flags) << '\n';
+    os << std::dec;
+    os << "Порядковый номер сообщения: " << static_cast<u32>(header.msg_seq_number) << '\n';
+    os << "Размер сообщения: "           << static_cast<u16>(header.msg_size) << '\n';
+    os << "Флаги сообщения:\n";
     if ((header.msg_flags & MarketDataPacketHeader::message_fragmentation) == MarketDataPacketHeader::message_fragmentation) {
         os << "* 0x1 Это последний пакет фрагментированного сообщения или сообщение не фрагментировано\n";
     } else {
@@ -71,7 +72,7 @@ std::ofstream& operator<<(std::ofstream& os, const MarketDataPacketHeader& heade
     os << "== MarketDataPacketHeader: ==\n";
     os << "Порядковый номер сообщения: " << std::dec << static_cast<u32>(header.msg_seq_number) << '\n';
     os << "Размер сообщения: "           << std::dec << static_cast<u16>(header.msg_size) << '\n';
-    os << "Флаги сообщения:\n";//            << std::dec << static_cast<u16>(header.msg_flags) << '\n';
+    os << "Флаги сообщения:\n";
     if ((header.msg_flags & MarketDataPacketHeader::message_fragmentation) == MarketDataPacketHeader::message_fragmentation) {
         os << "* 0x1 Это последний пакет фрагментированного сообщения или сообщение не фрагментировано\n";
     } else {
