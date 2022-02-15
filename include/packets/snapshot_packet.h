@@ -3,8 +3,8 @@
 #include <fstream>
 
 class SnapshotPacket {
-friend std::ostream& operator<<(std::ostream& os, const SnapshotPacket& packet);
-friend std::ofstream& operator<<(std::ofstream& os, const SnapshotPacket& packet);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const SnapshotPacket& packet);
 private:
     SBEMessage sbe_message;
     u64 size {};
@@ -17,16 +17,11 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const SnapshotPacket& snapshot_packet) {
-    os << "====================  Snapshot packet layer: ===================\n";
-    os << snapshot_packet.sbe_message << '\n';
-    os << "====================  Snapshot packet end ===================\n";
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const SnapshotPacket& snapshot_packet) {
+    os << "== Snapshot packet layer: ==\n";
+    os << snapshot_packet.sbe_message << std::endl;
+    os << "== Snapshot packet end ==\n";
     return os;
 }
 
-std::ofstream& operator<<(std::ofstream& os, const SnapshotPacket& snapshot_packet) {
-    os << "====================  Snapshot packet layer: ===================\n";
-    os << snapshot_packet.sbe_message;
-    os << "====================  Snapshot packet end ===================\n";
-    return os;
-}

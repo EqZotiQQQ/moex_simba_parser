@@ -13,9 +13,9 @@
 #include "udp.h"
 #include "pcap_header.h"
 
-class IPHeader {
-    friend std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header);
-    friend std::ostream& operator<<(std::ostream& os, const IPHeader& pcap);
+class GlobalPcapHeader {
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const GlobalPcapHeader& ip_header);
 private:
     u32 magic_number {};
     u16 version_major {};
@@ -35,7 +35,10 @@ public:
         for (int i = 0; i < 4; i++) {
             buffer[i] = file.get();
         }
-        magic_number = buffer[0] << 24 | buffer[1] << 16 | buffer[2] << 8 | buffer[3];
+        magic_number = buffer[0] << 24
+                     | buffer[1] << 16
+                     | buffer[2] << 8
+                     | buffer[3];
         validate_endians();
         // Dream: parse<u16>();
         version_major = Parsers::parse_u16(file, endian);
@@ -58,17 +61,17 @@ public:
     }
 };
 
-class IPPacket {
-    friend std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip);
-    friend std::ostream& operator<<(std::ostream& os, const IPPacket& ip);
+class GlobalPcapPacket {
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const GlobalPcapPacket& ip);
 private:
-    IPHeader ip_header;
+    GlobalPcapHeader ip_header;
     PcapPacket pcap_parser;
     u32 bound {};
     Endian endian {};
     u32 i {};
 public:
-    IPPacket(u32 bound): bound(bound) {}
+    GlobalPcapPacket(u32 bound): bound(bound) {}
 
     void parse(std::ifstream& file, std::ofstream& out) {
         endian = ip_header.parse(file);
@@ -81,20 +84,16 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const IPPacket& ip) {
-    os << ip.ip_header << '\n';
-    os << ip.pcap_parser << '\n';
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const IPPacket& ip) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const GlobalPcapPacket& ip) {
     os << ip.ip_header << std::endl;
     os << ip.pcap_parser << std::endl;
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const IPHeader& ip_header) {
-    os << "== IP Header ==\n";
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const GlobalPcapHeader& ip_header) {
+    os << "== Global Pcap Header ==\n";
     os << std::setw(2) << std::right << std::hex;
     os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
     os << std::dec;
@@ -105,22 +104,6 @@ std::ostream& operator<<(std::ostream& os, const IPHeader& ip_header) {
     os << "Sig figs: " << ip_header.sig_figs << '\n';
     os << "Snap len: " << ip_header.snap_len << '\n';
     os << "Network: " << ip_header.network << '\n';
-    os << "== IP Header end ==\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const IPHeader& ip_header) {
-    os << "== IP Header ==\n";
-    os << std::setw(2) << std::right << std::hex;
-    os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
-    os << std::dec;
-    os << "Endian: " << endian_type[ip_header.magic_number] << '\n';
-    os << "Version Major: " << ip_header.version_major << '\n';
-    os << "Version Minor: " << ip_header.version_minor << '\n';
-    os << "Time zone: " << ip_header.time_zone << '\n';
-    os << "Sig figs: " << ip_header.sig_figs << '\n';
-    os << "Snap len: " << ip_header.snap_len << '\n';
-    os << "Network: " << ip_header.network << '\n';
-    os << "== IP Header end ==\n";
+    os << "== Global Pcap Header end ==\n";
     return os;
 }

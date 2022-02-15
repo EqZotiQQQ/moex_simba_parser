@@ -10,8 +10,8 @@
 #include "packets/sbe/sbe_message.h"
 
 class MarketDataPacket {
-    friend std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet);
-    friend std::ofstream& operator<<(std::ofstream& os, const MarketDataPacket& packet);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const MarketDataPacket& packet);
 private:
     u64 packet_length {};
     MarketDataPacketHeader market_data_packet_header {};
@@ -39,19 +39,8 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet) {
-    os << "== Packet layer: ==\n";
-    os << packet.market_data_packet_header << '\n';
-    if (packet.market_data_packet_header.is_incremental()) {
-        os << packet.incremental_packet.value() << '\n';
-    } else {
-        os << packet.snapshot_packet.value() << '\n';
-    }
-    os << "==  Packet layer end ==\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const MarketDataPacket& packet) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const MarketDataPacket& packet) {
     os << "== Packet layer: ==\n";
     os << packet.market_data_packet_header << std::endl;
     if (packet.market_data_packet_header.is_incremental()) {
@@ -59,6 +48,6 @@ std::ofstream& operator<<(std::ofstream& os, const MarketDataPacket& packet) {
     } else {
         os << packet.snapshot_packet.value() << std::endl;
     }
-    os << "==  Packet layer end ==\n";
+    os << "== Packet layer end ==\n";
     return os;
 }

@@ -11,7 +11,7 @@ set(SRC main.cpp)
 set(HEADERS
         include/pcap_parser.h
         include/exceptions.h
-        include/ip.h
+        include/global_pcap.h
         include/utils/parsers.h
         include/udp.h
         include/types/constants.h

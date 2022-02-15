@@ -11,7 +11,7 @@
 class Parsers {
     // TODO parse group of bytes to reduce fragmentation's
 public:
-    static u8 parse_u8(std::ifstream& file, Endian endian) {
+    static u8 parse_u8(std::ifstream& file) {
         return static_cast<u8>(file.get());
     }
 
@@ -24,8 +24,8 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
-        u16_val = static_cast<u16>(bytes[0]) << 8 |
-                  static_cast<u16>(bytes[1]);
+        u16_val =   static_cast<u16>(bytes[0])
+                  | static_cast<u16>(bytes[1]) << 8;
         return u16_val;
     }
 
@@ -38,10 +38,10 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
-        i32_val = static_cast<i32>(bytes[0]) << 24 |
-                  static_cast<i32>(bytes[1]) << 16 |
-                  static_cast<i32>(bytes[2]) <<  8 |
-                  static_cast<i32>(bytes[3]);
+        i32_val = static_cast<i32>(bytes[0])
+                | static_cast<i32>(bytes[1]) <<  8
+                | static_cast<i32>(bytes[2]) << 16
+                | static_cast<i32>(bytes[3]) << 24;
         return i32_val;
     }
 
@@ -54,10 +54,10 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
-        u32_val = static_cast<u32>(bytes[0]) << 24 |
-                  static_cast<u32>(bytes[1]) << 16 |
-                  static_cast<u32>(bytes[2]) <<  8 |
-                  static_cast<u32>(bytes[3]);
+        u32_val = static_cast<u32>(bytes[0])
+                | static_cast<u32>(bytes[1]) <<  8
+                | static_cast<u32>(bytes[2]) << 16
+                | static_cast<u32>(bytes[3]) << 24;
         return u32_val;
     }
 
@@ -70,14 +70,14 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
-        u64_val = static_cast<u64>(bytes[0]) << 56 |
-                  static_cast<u64>(bytes[1]) << 48 |
-                  static_cast<u64>(bytes[2]) << 40 |
-                  static_cast<u64>(bytes[3]) << 32 |
-                  static_cast<u64>(bytes[4]) << 24 |
-                  static_cast<u64>(bytes[5]) << 16 |
-                  static_cast<u64>(bytes[6]) <<  8 |
-                  static_cast<u64>(bytes[7]);
+        u64_val = static_cast<u64>(bytes[0])
+                | static_cast<u64>(bytes[1]) <<  8
+                | static_cast<u64>(bytes[2]) << 16
+                | static_cast<u64>(bytes[3]) << 24
+                | static_cast<u64>(bytes[4]) << 32
+                | static_cast<u64>(bytes[5]) << 40
+                | static_cast<u64>(bytes[6]) << 48
+                | static_cast<u64>(bytes[7]) << 56;
         return u64_val;
     }
 
@@ -90,14 +90,14 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
-        i64_val = static_cast<i64>(bytes[0]) << 56 |
-                  static_cast<i64>(bytes[1]) << 48 |
-                  static_cast<i64>(bytes[2]) << 40 |
-                  static_cast<i64>(bytes[3]) << 32 |
-                  static_cast<i64>(bytes[4]) << 24 |
-                  static_cast<i64>(bytes[5]) << 16 |
-                  static_cast<i64>(bytes[6]) <<  8 |
-                  static_cast<i64>(bytes[7]);
+        i64_val =  static_cast<i64>(bytes[0])
+                 | static_cast<i64>(bytes[1]) <<  8
+                 | static_cast<i64>(bytes[2]) << 16
+                 | static_cast<i64>(bytes[3]) << 24
+                 | static_cast<i64>(bytes[4]) << 32
+                 | static_cast<i64>(bytes[5]) << 40
+                 | static_cast<i64>(bytes[6]) << 48
+                 | static_cast<i64>(bytes[7]) << 56;
         return i64_val;
     }
 

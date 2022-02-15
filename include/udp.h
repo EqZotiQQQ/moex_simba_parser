@@ -10,8 +10,8 @@
 
 
 class UDPHeader {
-    friend std::ostream& operator<<(std::ostream& os, const UDPHeader& header);
-    friend std::ofstream& operator<<(std::ofstream& os, const UDPHeader& header);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const UDPHeader& header);
 private:
     u32 check_sum {};
     std::array<u16, 4> source_ip {};
@@ -31,18 +31,18 @@ public:
 
     void parse(std::ifstream& file, Endian endian) {
         Parsers::skip(file, 24);
-        check_sum = Parsers::parse_u16(file, Endian::little_endian);
+        check_sum = Parsers::parse_u16(file, endian);
         source_ip = parse_ip(file);
         dest_ip = parse_ip(file);
-        source_port = Parsers::parse_u16(file, Endian::little_endian);
-        destination_port = Parsers::parse_u16(file, Endian::little_endian);
+        source_port = Parsers::parse_u16(file, endian);
+        destination_port = Parsers::parse_u16(file, endian);
         Parsers::skip(file, 4);
     }
 };
 
 class UDPPacket {
-    friend std::ostream& operator<<(std::ostream& os, const UDPPacket& udp_packet);
-    friend std::ofstream& operator<<(std::ofstream& os, const UDPPacket& udp_packet);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const UDPPacket& udp_packet);
 private:
     UDPHeader header;
     MarketDataPacket payload;
@@ -56,31 +56,15 @@ public:
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const UDPPacket& udp_packet) {
-    os << udp_packet.header << '\n';
-    os << udp_packet.payload << '\n';
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const UDPPacket& udp_packet) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const UDPPacket& udp_packet) {
     os << udp_packet.header << std::endl;
     os << udp_packet.payload << std::endl;
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const UDPHeader& header) {
-    os << "== UDP Header: ==\n";
-    os << std::dec;
-    os << "Source IP: "        << static_cast<u16>(header.source_ip[0]) << ":" << static_cast<u16>(header.source_ip[1]) << ":" << static_cast<u16>(header.source_ip[2]) << ":" << static_cast<u16>(header.source_ip[3]) << '\n';
-    os << "Destination IP: "   << static_cast<u16>(header.dest_ip[0]) << ":" << static_cast<u16>(header.dest_ip[1]) << ":" << static_cast<u16>(header.dest_ip[2]) << ":" << static_cast<u16>(header.dest_ip[3]) << '\n';
-    os << "Source port: "      << static_cast<u16>(header.source_port) << '\n';
-    os << "Destination port: " << static_cast<u16>(header.destination_port) << '\n';
-    os << "Check sum: "        << static_cast<u16>(header.check_sum) << '\n';
-    os << "== UDP Header end ==\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const UDPHeader& header) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const UDPHeader& header) {
     os << "== UDP Header: ==\n";
     os << std::dec;
     os << "Source IP: "        << static_cast<u16>(header.source_ip[0]) << ":" << static_cast<u16>(header.source_ip[1]) << ":" << static_cast<u16>(header.source_ip[2]) << ":" << static_cast<u16>(header.source_ip[3]) << '\n';

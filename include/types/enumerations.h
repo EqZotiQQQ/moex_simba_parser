@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include "typenames.h"
+#include "constants.h"
 
 static std::unordered_map<u8, std::string> md_update_action {
         {0, "New"},
@@ -17,10 +18,10 @@ static std::unordered_map<u8, std::string> md_entry_type {
 };
 
 static std::unordered_map<u32, std::string> endian_type {
-        {3569595041, "Big endian"},
-        {2712847316, "Little endian"},
-        {1295823521, "Big endian"},
-        {2712812621, "Little endian"},
+        {Constants::big_endian_milliseconds, "Big endian"},
+        {Constants::little_endian_milliseconds, "Little endian"},
+        {Constants::big_endian_nanoseconds, "Big endian"},
+        {Constants::little_endian_nanoseconds, "Little endian"},
 };
 
 static std::unordered_map<u32, std::string> message_type {

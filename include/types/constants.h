@@ -7,10 +7,10 @@
 
 
 namespace Constants {
-    constexpr u32 big_endian_milliseconds = 3569595041; // D4C3B2A1
-    constexpr u32 big_endian_nanoseconds = 1295823521;  // 4D3CB2A1
-    constexpr u32 little_endian_milliseconds = 2712847316;    // A1B2C3D4
-    constexpr u32 little_endian_nanoseconds = 2712812621;     // A1B23C4D
+    constexpr u32 big_endian_milliseconds = 0xA1B2C3D4;
+    constexpr u32 big_endian_nanoseconds = 0xA1B23C4D;
+    constexpr u32 little_endian_milliseconds = 0xD4C3B2A1;
+    constexpr u32 little_endian_nanoseconds = 0x4D3CB2A1;
 }
 
 namespace MessageType {

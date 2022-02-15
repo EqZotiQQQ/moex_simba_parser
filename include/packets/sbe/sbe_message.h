@@ -7,7 +7,7 @@
 #include "types/typenames.h"
 #include "utils/parsers.h"
 #include "messages/order_update.h"
-#include "ip.h"
+#include "global_pcap.h"
 #include "messages/order_execution.h"
 #include "messages/order_book_snapshot.h"
 #include "messages/order_best_prices.h"
@@ -35,8 +35,8 @@ const static std::unordered_map<i32, MessageId> message_id {
 };
 
 class SBEHeader {
-    friend std::ofstream& operator<<(std::ofstream& os, const SBEHeader& header);
-    friend std::ostream& operator<<(std::ostream& os, const SBEHeader& header);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const SBEHeader& header);
 private:
     u16 block_length {};  // Длина корневой части сообщения, кроме самой SBE Header и NoMDEntries
     u16 template_ID {}; // ID сообщения
@@ -60,8 +60,8 @@ public:
 };
 
 class SBEMessage {
-    friend std::ostream& operator<<(std::ostream& os, const SBEMessage& message);
-    friend std::ofstream& operator<<(std::ofstream& os, const SBEMessage& message);
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const SBEMessage& message);
 private:
     SBEHeader header {};
     std::optional<OrderUpdate> order_update;
@@ -125,18 +125,8 @@ public:
     }
 };
 
-
-std::ostream& operator<<(std::ostream& os, const SBEHeader& header) {
-    os << "== SBEHeader ==\n";
-    os << "Длина блока: "       << std::dec << static_cast<u32>(header.block_length) << '\n';
-    os << "Template ID: "       << std::dec << static_cast<u16>(header.template_ID) << '\n';
-    os << "Schema ID: "         << std::dec << static_cast<u16>(header.schema_ID) << '\n';
-    os << "Version: "           << std::dec << static_cast<u64>(header.version) << '\n';
-    os << "== SBEHeader end ==\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const SBEHeader& header) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const SBEHeader& header) {
     os << "== SBEHeader ==\n";
     os << std::dec;
     os << "Длина блока: "       << static_cast<u32>(header.block_length) << '\n';
@@ -147,23 +137,8 @@ std::ofstream& operator<<(std::ofstream& os, const SBEHeader& header) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const SBEMessage& message) {
-    os << "== SBE Message ==\n";
-    os << message.header << '\n';
-    if (message.order_update) {
-        os << message.order_update.value() << '\n';
-    }
-    if (message.order_execution) {
-        os << message.order_execution.value() << '\n';
-    }
-    if (message.order_book_snapshot_packet) {
-        os << message.order_book_snapshot_packet.value() << '\n';
-    }
-    os << "== SBE Message end ==\n";
-    return os;
-}
-
-std::ofstream& operator<<(std::ofstream& os, const SBEMessage& message) {
+template <typename OutPipe>
+OutPipe& operator<<(OutPipe& os, const SBEMessage& message) {
     os << "== SBE Message ==\n";
     os << message.header << std::endl;
     if (message.order_update) {
@@ -178,3 +153,4 @@ std::ofstream& operator<<(std::ofstream& os, const SBEMessage& message) {
     os << "== SBE Message end ==\n";
     return os;
 }
+

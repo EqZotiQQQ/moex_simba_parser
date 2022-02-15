@@ -1,7 +1,7 @@
 #pragma once
 
 #include "exceptions.h"
-#include "ip.h"
+#include "global_pcap.h"
 #include "utils/parsers.h"
 #include "udp.h"
 #include "types/constants.h"
@@ -18,13 +18,13 @@ class PcapParser {
 private:
     std::ifstream in;
     std::ofstream out;
-    IPPacket ip;
+    GlobalPcapPacket pcap_packet;
 
 public:
     explicit PcapParser(const std::string& in_path, const std::string& out_path, u32 bound):
             in(in_path, std::ios::in | std::ios::out | std::ios::binary),
             out(out_path),
-            ip(bound) {
+            pcap_packet(bound) {
         if (!in.is_open()) {
             throw FileNotFoundException();
         }
@@ -34,6 +34,6 @@ public:
     }
 
     void parse() {
-        ip.parse(in, out);
+        pcap_packet.parse(in, out);
     }
 };
