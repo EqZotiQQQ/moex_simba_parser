@@ -10,7 +10,7 @@
 
 static const char* get_type(u16 type) {
     switch (type) {
-        case 8: // 0x0800 type
+        case 0x0800: // type
             return "IPv4";
         default:
             return "Bad type";
@@ -47,12 +47,12 @@ public:
     void parse(std::ifstream& file, Endian endian) {
         destination_mac = parse_mac(file);
         source_mac = parse_mac(file);
-        protocol_version = Parsers::parse_u16(file, endian);
+        protocol_version = Parsers::parse_u16(file, Endian::big_endian);
         strange_field = Parsers::parse_u8(file);
         differentiated_services_field = Parsers::parse_u8(file);
-        total_length = Parsers::parse_u16(file, endian);
-        identification = Parsers::parse_u16(file, endian);
-        flags_and_fragment_offset = Parsers::parse_u16(file, endian);
+        total_length = Parsers::parse_u16(file, Endian::big_endian);
+        identification = Parsers::parse_u16(file, Endian::big_endian);
+        flags_and_fragment_offset = Parsers::parse_u16(file, Endian::big_endian);
         ttl = Parsers::parse_u8(file);
         udp_protocol = Parsers::parse_u8(file);
     }
@@ -66,12 +66,12 @@ OutPipe& operator<<(OutPipe& os, const IpHeader& header) {
     os << "Source mac: "        << static_cast<u16>(header.source_mac[0]) << ":"        << static_cast<u16>(header.source_mac[1]) << ":"        << static_cast<u16>(header.source_mac[2]) << ":"        << static_cast<u16>(header.source_mac[3]) << ":"        << static_cast<u16>(header.source_mac[4]) << ":"        << static_cast<u16>(header.source_mac[5]) << "\n";
     os << std::dec;
     os << "Protocol version: " << get_type(header.protocol_version) << '\n';
-    os << "Strange field: " << header.strange_field << '\n';
-    os << "Differential Services Field: " << header.differentiated_services_field << '\n';
+    os << "Strange field: (TODO)" << header.strange_field << '\n';
+    os << "Differential Services Field: (TODO)" << header.differentiated_services_field << '\n';
     os << "Total Length: " << header.total_length << '\n';
-    os << "Flags and Fragment offset: " << header.flags_and_fragment_offset << '\n';
-    os << "Identification : " << header.identification << '\n';
-    os << "Time to live: " << header.ttl << '\n';
+    os << "Flags and Fragment offset: (TODO) " << header.flags_and_fragment_offset << '\n';
+    os << "Identification : 0x" << std::hex << header.identification << '\n';
+    os << "Time to live: " << std::dec << static_cast<u16>(header.ttl) << '\n';
     os << "UDP protocol: " << header.udp_protocol << '\n';
     os << "== IpHeader end ==\n";
     return os;
