@@ -13,7 +13,7 @@ set(HEADERS
         include/exceptions.h
         include/global_pcap.h
         include/utils/parsers.h
-        include/udp.h
+        include/udp_parser.h
         include/types/constants.h
         include/types/typenames.h
         include/tests/tests.h
@@ -27,6 +27,6 @@ set(HEADERS
         include/packets/sbe/sbe_message.h
         include/messages/order_best_prices.h
         include/types/enumerations.h
-        include/pcap_header.h)
+        include/pcap_header.h include/ip_header_parser.h)
 
 add_executable(another_pcap_parser ${SRC}  ${HEADERS})

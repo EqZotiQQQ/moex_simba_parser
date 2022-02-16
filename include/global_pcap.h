@@ -10,7 +10,7 @@
 #include "types/typenames.h"
 #include "types/constants.h"
 #include "utils/parsers.h"
-#include "udp.h"
+#include "udp_parser.h"
 #include "pcap_header.h"
 
 class GlobalPcapHeader {
@@ -65,7 +65,7 @@ class GlobalPcapPacket {
     template <typename OutPipe>
     friend OutPipe& operator<<(OutPipe& os, const GlobalPcapPacket& ip);
 private:
-    GlobalPcapHeader ip_header;
+    GlobalPcapHeader global_pcap_header;
     PcapPacket pcap_parser;
     u32 bound {};
     Endian endian {};
@@ -74,10 +74,11 @@ public:
     GlobalPcapPacket(u32 bound): bound(bound) {}
 
     void parse(std::ifstream& file, std::ofstream& out) {
-        endian = ip_header.parse(file);
-        out << ip_header;
+        endian = global_pcap_header.parse(file);
+        out << global_pcap_header;
         while (i < bound && !file.eof()) {
             out << "Packet number " << ++i << '\n';
+            i++;
             pcap_parser.parse(file, endian);
             out << pcap_parser << std::endl;
         }
@@ -86,7 +87,7 @@ public:
 
 template <typename OutPipe>
 OutPipe& operator<<(OutPipe& os, const GlobalPcapPacket& ip) {
-    os << ip.ip_header << std::endl;
+    os << ip.global_pcap_header << std::endl;
     os << ip.pcap_parser << std::endl;
     return os;
 }

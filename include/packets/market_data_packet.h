@@ -6,14 +6,14 @@
 #include "messages/order_update.h"
 #include "utils/parsers.h"
 
-class MarketDataPacketHeader { // Little endian
+class MarketDataPacketHeader {
     template <typename OutPipe>
     friend OutPipe& operator<<(OutPipe& os, const MarketDataPacketHeader& header);
 private:
-    u32 msg_seq_number {};          // Счётчик. ++ когда отправляет сообщение. Ресет раз в сутки
-    u16 msg_size {};                // Длина сообщения в байтах
-    u16 msg_flags {};               // Флаги. Лучше читать в доке про флаги
-    u64 sending_time {};            // Время отправки сообщения шлюзом
+    u32 msg_seq_number {};
+    u16 msg_size {};
+    u16 msg_flags {};
+    u64 sending_time {};
 public:
     constexpr static u8 size {16};
 
