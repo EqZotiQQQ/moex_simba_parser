@@ -11,7 +11,8 @@
 #include "types/constants.h"
 #include "utils/parsers.h"
 #include "udp_parser.h"
-#include "pcap_header.h"
+#include "pcap_packet_parser.h"
+
 
 class GlobalPcapHeader {
     template <typename OutPipe>
@@ -75,6 +76,7 @@ public:
 
     void parse(std::ifstream& file, std::ofstream& out) {
         endian = global_pcap_header.parse(file);
+
         out << global_pcap_header;
         while (i < bound && !file.eof()) {
             out << "Packet number " << ++i << '\n';

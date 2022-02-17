@@ -6,7 +6,7 @@
 #include "packets/market_data_packet.h"
 #include "packets/incremental_packet.h"
 #include "packets/snapshot_packet.h"
-#include "market_data_packet.h"
+#include "market_data_packet_parser.h"
 #include "ip_header_parser.h"
 
 
@@ -80,7 +80,7 @@ OutPipe& operator<<(OutPipe& os, const UDPHeader& header) {
     os << "Source port: "      << static_cast<u16>(header.source_port) << '\n';
     os << "Destination port: " << static_cast<u16>(header.destination_port) << '\n';
     os << "Check sum: "        << static_cast<u16>(header.check_sum) << '\n';
-    os << "Length : "          << static_cast<u16>(header.length) << '\n';
+    os << "Length:  "          << static_cast<u16>(header.length) << '\n';
     os << "Check sum udp: "    << static_cast<u16>(header.check_sum_udp) << '\n';
     os << "== UDP Header end ==\n";
     return os;

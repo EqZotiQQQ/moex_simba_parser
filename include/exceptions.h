@@ -22,3 +22,31 @@ class BadMessageTypeException: public std::exception {
         return "Invalid message type";
     }
 };
+
+class UnsupportedVersionException: public std::exception {
+    const char* what() const noexcept override
+    {
+        return "UnsupportedVersionException";
+    }
+};
+
+class BadHeaderLengthException: public std::exception {
+    const char* what() const noexcept override
+    {
+        return "BadHeaderLengthException";
+    }
+};
+
+class UnsupportedDiffServException: public std::exception {
+    const char* what() const noexcept override
+    {
+        return "UnsupportedDiffServException";
+    }
+};
+
+class UnsupportedProtocolException: public std::exception {
+    const char* what() const noexcept override
+    {
+        return "UnsupportedProtocolException";
+    }
+};
