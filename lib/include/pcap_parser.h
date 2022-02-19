@@ -11,15 +11,11 @@
 #include <array>
 #include <vector>
 
-//todo: tests, benchmarks, maybe improve structure
-
-
 class PcapParser {
 private:
     std::ifstream in;
     std::ofstream out;
     GlobalPcapPacket pcap_packet;
-
 public:
     explicit PcapParser(const std::string& in_path, const std::string& out_path, u32 bound):
             in(in_path, std::ios::in | std::ios::out | std::ios::binary),

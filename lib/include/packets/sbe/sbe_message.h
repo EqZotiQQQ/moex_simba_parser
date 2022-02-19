@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+#include <optional>
 #include "types/typenames.h"
 #include "utils/parsers.h"
 #include "messages/order_update.h"
@@ -11,6 +12,7 @@
 #include "messages/order_execution.h"
 #include "messages/order_book_snapshot.h"
 #include "messages/order_best_prices.h"
+#include "exceptions.h"
 
 struct MessageId {
     u16 template_id {};
