@@ -37,9 +37,9 @@ public:
             buffer[i] = file.get();
         }
         magic_number = buffer[0] << 24
-                     | buffer[1] << 16
-                     | buffer[2] << 8
-                     | buffer[3];
+                       | buffer[1] << 16
+                       | buffer[2] << 8
+                       | buffer[3];
         validate_endians();
         // Dream: parse<u16>();
         version_major = Parsers::parse_u16(file, endian);
@@ -48,6 +48,19 @@ public:
         sig_figs = Parsers::parse_u32(file, endian);
         snap_len = Parsers::parse_u32(file, endian);
         network = Parsers::parse_u32(file, endian);
+//
+//        std::vector<u8> buffer = Parsers::parse(file, 24);
+//        magic_number = buffer[0] << 24
+//                     | buffer[1] << 16
+//                     | buffer[2] << 8
+//                     | buffer[3];
+//        validate_endians();
+//        version_major = Parsers::collapse<u16>(buffer, endian, 4, 5);
+//        version_minor = Parsers::collapse<u16>(buffer, endian, 6, 7);
+//        time_zone = Parsers::collapse<i32>(buffer, endian, 8, 11);
+//        sig_figs = Parsers::collapse<u32>(buffer, endian, 12, 15);
+//        snap_len = Parsers::collapse<u32>(buffer, endian, 16, 19);
+//        network = Parsers::collapse<u32>(buffer, endian, 20, 23);
         return endian;
     };
 
@@ -74,15 +87,20 @@ private:
 public:
     GlobalPcapPacket(u32 bound): bound(bound) {}
 
-    void parse(std::ifstream& file, std::ofstream& out) {
+    void parse(std::ifstream& file, std::optional<std::ofstream>& out) {
         endian = global_pcap_header.parse(file);
 
-        out << global_pcap_header;
+        if (out.has_value()) {
+            out.value() << global_pcap_header;
+        }
         while (i < bound && !file.eof()) {
-            out << "Packet number " << ++i << '\n';
             i++;
             pcap_parser.parse(file, endian);
-            out << pcap_parser << std::endl;
+            if (out.has_value()) {
+                out.value() << "Packet number " << ++i << '\n';
+                out.value() << pcap_parser << std::endl;
+            }
+
         }
     }
 };

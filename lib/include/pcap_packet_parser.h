@@ -18,6 +18,12 @@ public:
         timestamp_us = Parsers::parse_u32(file, endian);
         pack_length = Parsers::parse_u32(file, endian);
         real_length = Parsers::parse_u32(file, endian);
+
+//        std::vector<u8> buffer = Parsers::parse(file, size);
+//        timestamp_ms = Parsers::collapse<u32>(buffer, endian, 0, 3);
+//        timestamp_us = Parsers::collapse<u32>(buffer, endian, 4, 7);
+//        pack_length = Parsers::collapse<u32>(buffer, endian, 8, 11);
+//        real_length = Parsers::collapse<u32>(buffer, endian, 12, 15);
     }
 
     u32 get_length() const noexcept {

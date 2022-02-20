@@ -14,17 +14,26 @@
 class PcapParser {
 private:
     std::ifstream in;
-    std::ofstream out;
+    std::optional<std::ofstream> out;
     GlobalPcapPacket pcap_packet;
 public:
-    explicit PcapParser(const std::string& in_path, const std::string& out_path, u32 bound):
+    PcapParser(const std::string& in_path, const std::string& out_path, u32 bound):
             in(in_path, std::ios::in | std::ios::out | std::ios::binary),
             out(out_path),
             pcap_packet(bound) {
         if (!in.is_open()) {
             throw FileNotFoundException();
         }
-        if (!out.is_open()) {
+        if (!out->is_open()) {
+            throw FileNotFoundException();
+        }
+    }
+
+    PcapParser(const std::string& in_path, u32 bound):
+            in(in_path, std::ios::in | std::ios::out | std::ios::binary),
+            out({}),
+            pcap_packet(bound) {
+        if (!in.is_open()) {
             throw FileNotFoundException();
         }
     }

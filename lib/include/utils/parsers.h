@@ -12,6 +12,35 @@
 class Parsers {
     // TODO parse group of bytes to reduce fragmentation's
 public:
+
+    static std::vector<u8> parse(std::ifstream& file, u32 n) {
+        std::vector<u8> bytes(n);
+        file.get((char*) &bytes[0], n);
+        return bytes;
+    }
+
+    static void change_endian(std::vector<u8>& bytes, Endian endian) {
+        if (endian == Endian::big_endian) {
+            std::reverse(bytes.begin(), bytes.end());
+        }
+    }
+
+    template<typename T>
+    static T collapse(std::vector<u8>& buf, Endian endian, u32 beg, u32 end) {
+        T val {};
+        if (endian == Endian::big_endian) {
+            std::reverse(buf.begin() + beg, buf.end() + end);
+        }
+//        val |= buf[beg];
+        u8 range = end - beg;
+        for (int i = 0; i <= range; i++) {
+            u8 byte = buf[beg + i];
+            u32 temp = static_cast<T>(byte) << 8 * i;
+            val = val | temp;
+        }
+        return val;
+    }
+
     static u8 parse_u8(std::ifstream& file) {
         return static_cast<u8>(file.get());
     }
@@ -55,10 +84,18 @@ public:
         if (endian == Endian::big_endian) {
             std::reverse(bytes.begin(), bytes.end());
         }
+        u32 u1 = static_cast<u32>(bytes[0]);
+        u32 u2 = static_cast<u32>(bytes[1]) <<  8;
+        u32 u3 = static_cast<u32>(bytes[2]) << 16;
+        u32 u4 = static_cast<u32>(bytes[3]) << 24;
+        u32 u32_val_temp = u1
+                | u2
+                | u3
+                | u4;
         u32_val = static_cast<u32>(bytes[0])
-                | static_cast<u32>(bytes[1]) <<  8
-                | static_cast<u32>(bytes[2]) << 16
-                | static_cast<u32>(bytes[3]) << 24;
+                  | static_cast<u32>(bytes[1]) <<  8
+                  | static_cast<u32>(bytes[2]) << 16
+                  | static_cast<u32>(bytes[3]) << 24;
         return u32_val;
     }
 
