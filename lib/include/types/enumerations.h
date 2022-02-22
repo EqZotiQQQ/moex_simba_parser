@@ -40,3 +40,10 @@ static std::unordered_map<u32, std::string> message_type {
         {1001, "Logout"},
         {1002, "MarketDataRequest"},
 };
+
+enum OutputFromat {
+    console = 0,
+    file = 1,
+    disabled = 2,
+};
+

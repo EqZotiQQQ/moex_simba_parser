@@ -74,7 +74,7 @@ private:
 public:
     GlobalPcapPacket(u32 bound): parser{}, bound(bound) {}
 
-    void parse(std::ifstream& file, std::optional<std::ofstream>& out) {
+    void parse(std::ifstream& file, std::optional<std::ofstream>& out, OutputFromat out_format) {
 
         parser.file = std::move(file);
         parser.endian = Endian::big_endian;
@@ -83,10 +83,16 @@ public:
 
         u32 parsed_packets {};
 
-        if (out.has_value()) {
-            out.value() << global_pcap_header;
-        } else {
-            std::cout << global_pcap_header;
+        switch (out_format) {
+            case OutputFromat::file: {
+                out.value() << global_pcap_header;
+                break;
+            }
+            case OutputFromat::console: {
+                std::cout << global_pcap_header;
+                break;
+            }
+            default: break;
         }
 
         while (parsed_packets++ < bound) {
@@ -94,14 +100,19 @@ public:
 
             }
             parsed_bytes += pcap_parser.parse(parser);
-            if (out.has_value()) {
-                out.value() << "Packet number " << parsed_packets << '\n';
-                out.value() << pcap_parser << std::endl;
-            } else {
-                std::cout << "Packet number " << parsed_packets << '\n';
-                std::cout << pcap_parser << std::endl;
+            switch (out_format) {
+                case OutputFromat::file: {
+                    out.value() << "Packet number " << parsed_packets << '\n';
+                    out.value() << pcap_parser << std::endl;
+                    break;
+                }
+                case OutputFromat::console: {
+                    std::cout << "Packet number " << parsed_packets << '\n';
+                    std::cout << pcap_parser << std::endl;
+                    break;
+                }
+                default: break;
             }
-
         }
     }
 };
