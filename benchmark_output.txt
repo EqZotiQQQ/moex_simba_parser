@@ -7,6 +7,14 @@ BM_SomeFunction/1000          6224 us         6223 us          114
 BM_SomeFunction/10000        60032 us        60023 us           12
 BM_SomeFunction/100000      616047 us       615964 us            1
 BM_SomeFunction/1000000    8177284 us      8176279 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          6256 us         6255 us          113
+BM_SomeFunction/10000        60560 us        60548 us           11
+BM_SomeFunction/100000      641979 us       641815 us            1
+BM_SomeFunction/1000000    8630172 us      8628790 us            1
+
 
 
 Парсит по одному в буфер
@@ -17,3 +25,14 @@ BM_SomeFunction/1000          7788 us         7786 us           88
 BM_SomeFunction/10000        76286 us        76265 us            9
 BM_SomeFunction/100000      793528 us       793357 us            1
 BM_SomeFunction/1000000   10288195 us     10285852 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          7944 us         7942 us           90
+BM_SomeFunction/10000        77046 us        77027 us            9
+BM_SomeFunction/100000      797993 us       797863 us            1
+BM_SomeFunction/1000000   10248939 us     10247254 us            1
+
+
+
+
