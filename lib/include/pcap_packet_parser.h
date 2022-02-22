@@ -13,12 +13,11 @@ private:
 public:
     constexpr static u8 size {16};
 public:
-    u8 parse(BufferedReader& parser) {
+    void parse(BufferedReader& parser) {
         timestamp_ms = parser.next<u32>();
         timestamp_us = parser.next<u32>();
         pack_length = parser.next<u32>();
         real_length = parser.next<u32>();
-        return size;
     }
 
     u32 get_length() const noexcept {
@@ -36,11 +35,9 @@ public:
 
     PcapPacket() {}
 
-    u64 parse(BufferedReader& parser) {
-        u64 parsed_bytes {};
-        parsed_bytes += header.parse(parser);
-        parsed_bytes += udp_packet.parse(parser, header.get_length());
-        return parsed_bytes;
+    void parse(BufferedReader& parser) {
+        header.parse(parser);
+        udp_packet.parse(parser, header.get_length());
     }
 };
 

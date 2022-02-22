@@ -27,7 +27,7 @@ public:
     constexpr static u8 size {26};
 public:
 
-    u8 parse(BufferedReader& parser) {
+    void parse(BufferedReader& parser) {
         check_sum = parser.next<u16>(Endian::big_endian);
         source_ip = parser.next_ip();
         dest_ip = parser.next_ip();
@@ -35,7 +35,6 @@ public:
         destination_port = parser.next<u16>(Endian::big_endian);
         length = parser.next<u16>(Endian::big_endian);
         check_sum_udp = parser.next<u16>(Endian::big_endian);
-        return size;
     }
 };
 
@@ -49,18 +48,14 @@ private:
 public:
     UDPPacket() {}
 
-    u64 parse(BufferedReader& parser, u32 recorded) {
-        u64 parsed_bytes {};
+    void parse(BufferedReader& parser, u32 recorded) {
+        ip_header.parse(parser);
 
-        parsed_bytes += ip_header.parse(parser);
-
-        parsed_bytes += udp_header.parse(parser);
+        udp_header.parse(parser);
 
         payload.set_len(recorded - (16 + UDPHeader::size));
 
-        parsed_bytes += payload.parse(parser);
-
-        return parsed_bytes;
+        payload.parse(parser);
     }
 };
 

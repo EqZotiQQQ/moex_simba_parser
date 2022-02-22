@@ -13,7 +13,7 @@
 class BufferedReader {
     friend std::ostream& operator<<(std::ostream& os, const BufferedReader& reader);
 private:
-    static constexpr u64 buffer_size {32};
+    static constexpr u64 buffer_size {1024};
     u16 buffer_pos {};
     u64 parsed_bytes {};
     std::array<u8, buffer_size> buffer {0};

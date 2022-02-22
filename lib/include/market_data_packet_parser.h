@@ -25,8 +25,7 @@ public:
         packet_length = len;
     }
 
-    u64 parse(BufferedReader& parser) {
-        u64 parsed_bytes {};
+    void parse(BufferedReader& parser) {
         market_data_packet_header.parse(parser); // little endian only
         packet_length -= MarketDataPacketHeader::size;
         if (market_data_packet_header.is_incremental()) {
@@ -37,7 +36,6 @@ public:
             packet_length = snapshot_packet->parse(parser);
         }
         parser.skip(packet_length);
-        return parsed_bytes;
     }
 };
 

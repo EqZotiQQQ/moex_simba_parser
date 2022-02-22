@@ -69,8 +69,6 @@ private:
 
     Endian endian {};
 
-    u64 parsed_bytes {};
-
 public:
     GlobalPcapPacket(u32 bound): parser{}, bound(bound) {}
 
@@ -79,7 +77,7 @@ public:
         parser.file = std::move(file);
         parser.endian = Endian::big_endian;
 
-        parsed_bytes += global_pcap_header.parse(parser);
+        global_pcap_header.parse(parser);
 
         u32 parsed_packets {};
 
@@ -96,10 +94,7 @@ public:
         }
 
         while (parsed_packets++ < bound) {
-            if (parsed_packets == 1000) {
-
-            }
-            parsed_bytes += pcap_parser.parse(parser);
+            pcap_parser.parse(parser);
             switch (out_format) {
                 case OutputFromat::file: {
                     out.value() << "Packet number " << parsed_packets << '\n';

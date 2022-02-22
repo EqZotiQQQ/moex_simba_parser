@@ -97,7 +97,7 @@ public:
     constexpr static u16 size = {14};
 public:
     IpHeader() {}
-    u8 parse(BufferedReader& parser) {
+    void parse(BufferedReader& parser) {
         destination_mac = parser.next_mac();
         source_mac = parser.next_mac();
         protocol_version = parser.next<u16>(Endian::big_endian);
@@ -108,7 +108,6 @@ public:
         flags_and_fragment_offset = parser.next<u16>(Endian::big_endian);
         ttl = parser.next<u8>();
         udp_protocol = parser.next<u8>();
-        return size;
     }
 };
 
