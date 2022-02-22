@@ -25,17 +25,19 @@ public:
         packet_length = len;
     }
 
-    void parse(std::ifstream& file, Endian endian) {
-        market_data_packet_header.parse(file, Endian::little_endian); // little endian only
+    u64 parse(BufferedReader& parser) {
+        u64 parsed_bytes {};
+        market_data_packet_header.parse(parser); // little endian only
         packet_length -= MarketDataPacketHeader::size;
         if (market_data_packet_header.is_incremental()) {
             incremental_packet = IncrementalPacket {packet_length};
-            packet_length = incremental_packet->parse(file, endian);
+            packet_length = incremental_packet->parse(parser);
         } else {
             snapshot_packet = SnapshotPacket {packet_length};
-            packet_length = snapshot_packet->parse(file, endian);
+            packet_length = snapshot_packet->parse(parser);
         }
-        Parsers::skip(file, packet_length);
+        parser.skip(packet_length);
+        return parsed_bytes;
     }
 };
 

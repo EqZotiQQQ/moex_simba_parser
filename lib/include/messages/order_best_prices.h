@@ -14,11 +14,11 @@ private:
 public:
     constexpr static u8 size {21};
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        mkt_bid_px = Parsers::parse_i64(file, endian);
-        mkt_offer_px = Parsers::parse_i64(file, endian);
-        bp_flags = Parsers::parse_u8(file);
-        security_id = Parsers::parse_i32(file, endian);
+    void parse(BufferedReader& parser) {
+        mkt_bid_px = parser.next<i64>();
+        mkt_offer_px = parser.next<i64>();
+        bp_flags = parser.next<u8>();
+        security_id = parser.next<i32>();
     }
 };
 
@@ -29,12 +29,12 @@ class BestPricesOrder {
 public:
     constexpr static u8 size {3}; // Actual size is 1 + sizeof(BestPricesOrderHeader) * no_md_entries
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        entry_size = Parsers::parse_u16(file, endian);
-        no_md_entries = Parsers::parse_u8(file);
+    void parse(BufferedReader& parser) {
+        entry_size = parser.next<u16>();
+        no_md_entries = parser.next<u8>();
         for (int i = 0; i < no_md_entries; i++) {
             BestPricesOrderPayload payload;
-            payload.parse(file, endian);
+            payload.parse(parser);
             md_entries.emplace_back(payload);
         }
     }

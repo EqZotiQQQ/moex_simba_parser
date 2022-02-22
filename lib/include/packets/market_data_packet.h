@@ -23,11 +23,11 @@ public:
     constexpr static u8 incremental_message {0x8};
     constexpr static u8 pos_dup_flag {0x10};
 
-    void parse(std::ifstream& file, Endian endian) {
-        msg_seq_number = Parsers::parse_u32(file, endian);
-        msg_size = Parsers::parse_u16(file, endian);
-        msg_flags = Parsers::parse_u16(file, endian);
-        sending_time = Parsers::parse_u64(file, endian);
+    void parse(BufferedReader& parser) {
+        msg_seq_number = parser.next<u32>(Endian::little_endian);
+        msg_size = parser.next<u16>(Endian::little_endian);
+        msg_flags = parser.next<u16>(Endian::little_endian);
+        sending_time = parser.next<u64>(Endian::little_endian);
     }
 
     bool is_incremental() const noexcept {

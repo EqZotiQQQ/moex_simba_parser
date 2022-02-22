@@ -81,8 +81,8 @@ class IpHeader {
     template <typename OutPipe>
     friend OutPipe& operator<<(OutPipe& os, const IpHeader& header);
 private:
-    std::array<u16, 6> destination_mac {};
-    std::array<u16, 6> source_mac {};
+    std::array<u8, 6> destination_mac {};
+    std::array<u8, 6> source_mac {};
     u16 protocol_version {};
 
     u8 strange_field {};
@@ -93,28 +93,22 @@ private:
     u8 ttl {};
     u8 udp_protocol {};
 
-    std::array<u16, 6> parse_mac(std::ifstream& file) {
-        std::array<u16, 6> a {};
-        for (int i = 0; i < 6; i++) {
-            a[i] = file.get();
-        }
-        return a;
-    }
 public:
     constexpr static u16 size = {14};
 public:
     IpHeader() {}
-    void parse(std::ifstream& file, Endian endian) {
-        destination_mac = parse_mac(file);
-        source_mac = parse_mac(file);
-        protocol_version = Parsers::parse_u16(file, Endian::big_endian);
-        strange_field = Parsers::parse_u8(file);
-        differentiated_services_field = Parsers::parse_u8(file);
-        total_length = Parsers::parse_u16(file, Endian::big_endian);
-        identification = Parsers::parse_u16(file, Endian::big_endian);
-        flags_and_fragment_offset = Parsers::parse_u16(file, Endian::big_endian);
-        ttl = Parsers::parse_u8(file);
-        udp_protocol = Parsers::parse_u8(file);
+    u8 parse(BufferedReader& parser) {
+        destination_mac = parser.next_mac();
+        source_mac = parser.next_mac();
+        protocol_version = parser.next<u16>(Endian::big_endian);
+        strange_field = parser.next<u8>();
+        differentiated_services_field = parser.next<u8>();
+        total_length = parser.next<u16>(Endian::big_endian);
+        identification = parser.next<u16>(Endian::big_endian);
+        flags_and_fragment_offset = parser.next<u16>(Endian::big_endian);
+        ttl = parser.next<u8>();
+        udp_protocol = parser.next<u8>();
+        return size;
     }
 };
 

@@ -15,8 +15,8 @@ class UDPHeader {
     friend OutPipe& operator<<(OutPipe& os, const UDPHeader& header);
 private:
     u16 check_sum {};
-    std::array<u16, 4> source_ip {};
-    std::array<u16, 4> dest_ip {};
+    std::array<u8, 4> source_ip {};
+    std::array<u8, 4> dest_ip {};
     u16 source_port {};
     u16 destination_port {};
 
@@ -26,22 +26,16 @@ private:
 public:
     constexpr static u8 size {26};
 public:
-    std::array<u16, 4> parse_ip(std::ifstream& file) {
-        std::array<u16, 4> a {};
-        for (int i = 0; i < 4; i++) {
-            a[i] = file.get();
-        }
-        return a;
-    }
 
-    void parse(std::ifstream& file, Endian endian) {
-        check_sum = Parsers::parse_u16(file, Endian::big_endian);
-        source_ip = parse_ip(file);
-        dest_ip = parse_ip(file);
-        source_port = Parsers::parse_u16(file, Endian::big_endian);
-        destination_port = Parsers::parse_u16(file, Endian::big_endian);
-        length = Parsers::parse_u16(file, Endian::big_endian);
-        check_sum_udp = Parsers::parse_u16(file, Endian::big_endian);
+    u8 parse(BufferedReader& parser) {
+        check_sum = parser.next<u16>(Endian::big_endian);
+        source_ip = parser.next_ip();
+        dest_ip = parser.next_ip();
+        source_port = parser.next<u16>(Endian::big_endian);
+        destination_port = parser.next<u16>(Endian::big_endian);
+        length = parser.next<u16>(Endian::big_endian);
+        check_sum_udp = parser.next<u16>(Endian::big_endian);
+        return size;
     }
 };
 
@@ -50,23 +44,30 @@ class UDPPacket {
     friend OutPipe& operator<<(OutPipe& os, const UDPPacket& udp_packet);
 private:
     IpHeader ip_header;
-    UDPHeader header;
+    UDPHeader udp_header;
     MarketDataPacket payload;
 public:
     UDPPacket() {}
 
-    void parse(std::ifstream& file, Endian endian, u32 recorded) {
-        ip_header.parse(file, endian);
-        header.parse(file, endian);
+    u64 parse(BufferedReader& parser, u32 recorded) {
+        u64 parsed_bytes {};
+
+        parsed_bytes += ip_header.parse(parser);
+
+        parsed_bytes += udp_header.parse(parser);
+
         payload.set_len(recorded - (16 + UDPHeader::size));
-        payload.parse(file, endian);
+
+        parsed_bytes += payload.parse(parser);
+
+        return parsed_bytes;
     }
 };
 
 template <typename OutPipe>
 OutPipe& operator<<(OutPipe& os, const UDPPacket& udp_packet) {
     os << udp_packet.ip_header << std::endl;
-    os << udp_packet.header << std::endl;
+    os << udp_packet.udp_header << std::endl;
     os << udp_packet.payload << std::endl;
     return os;
 }

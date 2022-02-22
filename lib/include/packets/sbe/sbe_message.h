@@ -47,11 +47,11 @@ private:
 public:
     constexpr static u8 size_bytes {8};
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        block_length = Parsers::parse_u16(file, endian);
-        template_ID = Parsers::parse_u16(file, endian);
-        schema_ID = Parsers::parse_u16(file, endian);
-        version = Parsers::parse_u16(file, endian);
+    void parse(BufferedReader& parser) {
+        block_length = parser.next<u16>();
+        template_ID = parser.next<u16>();
+        schema_ID = parser.next<u16>();
+        version = parser.next<u16>();
     }
     u16 get_template_id() const noexcept {
         return template_ID;
@@ -76,32 +76,32 @@ public:
 
     }
 
-    u64 parse(std::ifstream& file, Endian endian) {
-        header.parse(file, endian);
+    u64 parse(BufferedReader& parser) {
+        header.parse(parser);
         size += SBEHeader::size_bytes;
         if (message_id.contains(header.get_template_id())) {
             switch (message_id.at(header.get_template_id()).template_id) {
                 case MessageType::OrderUpdate: {
                     order_update = OrderUpdate();
-                    order_update->parse(file, endian);
+                    order_update->parse(parser);
                     size += OrderUpdate::size_bytes;
                     break;
                 }
                 case MessageType::OrderExecution: {
                     order_execution = OrderExecution {};
-                    order_execution->parse(file, endian);
+                    order_execution->parse(parser);
                     size += OrderExecution::size_bytes;
                     break;
                 }
                 case MessageType::OrderBookSnapshot: {
                     order_book_snapshot_packet = OrderBookSnapshotPacket {};
-                    order_book_snapshot_packet->parse(file, endian);
+                    order_book_snapshot_packet->parse(parser);
                     size += OrderBookSnapshot::size * order_book_snapshot_packet->entries() + OrderBookSnapshotPacket::size;
                     break;
                 }
                 case MessageType::BestPrices: {
                     BestPricesOrder best_prices_order = BestPricesOrder {};
-                    best_prices_order.parse(file, endian);
+                    best_prices_order.parse(parser);
                     size += BestPricesOrderPayload::size * best_prices_order.entries() + BestPricesOrder::size;
                     break;
                 }
@@ -115,7 +115,7 @@ public:
                 case MessageType::Logon: {}
                 case MessageType::Logout: {}
                 case MessageType::MarketDataRequest: {
-                    Parsers::skip(file, header.get_length());
+                    parser.skip(header.get_length());
                     size += header.get_length();
                     break;
                 }

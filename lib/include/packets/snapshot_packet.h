@@ -11,8 +11,8 @@ private:
 public:
     SnapshotPacket(u64 size): size(size) {}
 
-    u64 parse(std::ifstream& file, Endian endian) {
-        size -= sbe_message.parse(file, endian);
+    u64 parse(BufferedReader& parser) {
+        size -= sbe_message.parse(parser);
         return size;
     }
 };

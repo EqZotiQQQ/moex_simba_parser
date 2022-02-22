@@ -14,8 +14,8 @@ static void BM_SomeFunction(benchmark::State& state) {
 
 // Register the function as a benchmark
 BENCHMARK(BM_SomeFunction)->Arg(1000)->Unit(benchmark::kMicrosecond);
-BENCHMARK(BM_SomeFunction)->Arg(10000)->Unit(benchmark::kMicrosecond);
-BENCHMARK(BM_SomeFunction)->Arg(100000)->Unit(benchmark::kMicrosecond);
-BENCHMARK(BM_SomeFunction)->Arg(1000000)->Unit(benchmark::kMicrosecond);
+//BENCHMARK(BM_SomeFunction)->Arg(10000)->Unit(benchmark::kMicrosecond);
+//BENCHMARK(BM_SomeFunction)->Arg(100000)->Unit(benchmark::kMicrosecond);
+//BENCHMARK(BM_SomeFunction)->Arg(1000000)->Unit(benchmark::kMicrosecond);
 
 BENCHMARK_MAIN();

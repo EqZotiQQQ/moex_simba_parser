@@ -15,9 +15,9 @@ public:
     static constexpr u8 size {12};
 
     IncrementalPacketHeader() {}
-    void parse(std::ifstream& file, Endian endian) {
-        transact_time = Parsers::parse_u64(file, endian);
-        exchange_trading_session_ID = Parsers::parse_u32(file, endian);
+    void parse(BufferedReader& parser) {
+        transact_time = parser.next<u64>(Endian::little_endian);
+        exchange_trading_session_ID = parser.next<u32>(Endian::little_endian);
     }
 };
 
@@ -30,12 +30,12 @@ private:
     u64 size {};
 public:
     explicit IncrementalPacket(u64 len) : size(len) {}
-    u64 parse(std::ifstream& file, Endian endian) {
-        header.parse(file, Endian::little_endian); // little endian only
+    u64 parse(BufferedReader& parser) {
+        header.parse(parser); // little endian only
         size -= IncrementalPacketHeader::size;
         while (size) {
             SBEMessage sbe_message {};
-            size -= sbe_message.parse(file, endian);
+            size -= sbe_message.parse(parser);
             sbe_messages.push_back(sbe_message);
         }
         return size;

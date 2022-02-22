@@ -5,150 +5,129 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <cstring>
 
 #include "types/typenames.h"
 
 
-class Parsers {
-    // TODO parse group of bytes to reduce fragmentation's
+class BufferedReader {
+    friend std::ostream& operator<<(std::ostream& os, const BufferedReader& reader);
+private:
+    static constexpr u64 buffer_size {32};
+    u16 buffer_pos {};
+    u64 parsed_bytes {};
+    std::array<u8, buffer_size> buffer {0};
+    bool is_init = false;
 public:
+    std::ifstream file;
+    Endian endian {};
+public:
+    BufferedReader(const std::string& in, Endian endian):
+        file(in, std::ios::in | std::ios::out | std::ios::binary),
+        endian(endian) {}
 
-    static std::vector<u8> parse(std::ifstream& file, u32 n) {
-        std::vector<u8> bytes(n);
-        file.get((char*) &bytes[0], n);
-        return bytes;
+    BufferedReader() = default;
+
+
+    u64 parse_by_byte() {
+        u64 left = parsed_bytes - buffer_pos;
+        for (int i = 0; i < left; i++) {
+            buffer[i] = buffer[buffer_size - left + i];
+        }
+        for (u64 i = left; i < buffer_size; i++) {
+            buffer[i] = file.get();
+        }
+        parsed_bytes = buffer_size;
+        return buffer_size;
     }
 
-    static void change_endian(std::vector<u8>& bytes, Endian endian) {
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
+    u64 parse() {
+        u64 left = parsed_bytes - buffer_pos;
+        for (int i = 0; i < left; i++) {
+            buffer[i] = buffer[buffer_size - left + i - 1];
         }
+        file.get((char*) &buffer[left], buffer_size - left);  // it .get() reads N-1 bytes from file and place to the end '/0'; get reads untill '/n' symbol, lol
+
+        if (!file.good()) {
+            std::cerr << "Bits: " << file.good() << file.bad() << file.fail() << file.eof() << std::endl;
+        }
+        u64 gcount = file.gcount();
+        parsed_bytes = gcount + left;
+        return parsed_bytes;
+    }
+
+    u64 default_parse_method() {
+//        return parse();
+        return parse_by_byte();
+    }
+
+    template<typename T> // T = i32, i16, ...
+    T next(Endian provided_endian) {
+        u8 t_size = sizeof(T);
+        u64 diapason = parsed_bytes - buffer_pos;
+        if (!is_init || t_size > diapason) {
+            default_parse_method();
+
+            is_init = true;
+            buffer_pos = 0;
+        }
+        T value {};
+        if (provided_endian == Endian::big_endian) {
+            std::reverse(buffer.begin() + buffer_pos, buffer.begin() + buffer_pos + t_size);
+        }
+        for (int i = 0; i < t_size; i++) {
+            u8 byte = buffer[buffer_pos + i];
+            T shift = static_cast<T>(byte) << 8 * i;
+            value = value | shift;
+        }
+        buffer_pos += t_size;
+        return value;
     }
 
     template<typename T>
-    static T collapse(std::vector<u8>& buf, Endian endian, u32 beg, u32 end) {
-        T val {};
-        if (endian == Endian::big_endian) {
-            std::reverse(buf.begin() + beg, buf.end() + end);
-        }
-//        val |= buf[beg];
-        u8 range = end - beg;
-        for (int i = 0; i <= range; i++) {
-            u8 byte = buf[beg + i];
-            u32 temp = static_cast<T>(byte) << 8 * i;
-            val = val | temp;
-        }
-        return val;
+    T next() {
+        return next<T>(endian);
     }
 
-    static u8 parse_u8(std::ifstream& file) {
-        return static_cast<u8>(file.get());
+    std::array<u8, 6> next_mac() {
+        std::array<u8, 6> mac_addr {};
+        for (int i = 0; i < 6; i++) {
+            mac_addr[i] = next<u8>();
+        }
+        return mac_addr;
     }
 
-    static u16 parse_u16(std::ifstream& file, Endian endian) {
-        u16 u16_val {};
-        std::array<u32, 2> bytes {};
-        for (int i = 0; i < 2; i++) {
-            bytes[i] = file.get();
-        }
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
-        }
-        u16_val =   static_cast<u16>(bytes[0])
-                  | static_cast<u16>(bytes[1]) << 8;
-        return u16_val;
-    }
-
-    static i32 parse_i32(std::ifstream& file, Endian endian) {
-        i32 i32_val {};
-        std::array<i32, 4> bytes {};
+    std::array<u8, 4> next_ip() {
+        std::array<u8, 4> ip_addr {};
         for (int i = 0; i < 4; i++) {
-            bytes[i] = file.get();
+            ip_addr[i] = next<u8>();
         }
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
-        }
-        i32_val = static_cast<i32>(bytes[0])
-                | static_cast<i32>(bytes[1]) <<  8
-                | static_cast<i32>(bytes[2]) << 16
-                | static_cast<i32>(bytes[3]) << 24;
-        return i32_val;
+        return ip_addr;
     }
 
-    static u32 parse_u32(std::ifstream& file, Endian endian) {
-        u32 u32_val {};
-        std::array<u32, 4> bytes {};
-        for (int i = 0; i < 4; i++) {
-            bytes[i] = file.get();
-        }
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
-        }
-        u32 u1 = static_cast<u32>(bytes[0]);
-        u32 u2 = static_cast<u32>(bytes[1]) <<  8;
-        u32 u3 = static_cast<u32>(bytes[2]) << 16;
-        u32 u4 = static_cast<u32>(bytes[3]) << 24;
-        u32 u32_val_temp = u1
-                | u2
-                | u3
-                | u4;
-        u32_val = static_cast<u32>(bytes[0])
-                  | static_cast<u32>(bytes[1]) <<  8
-                  | static_cast<u32>(bytes[2]) << 16
-                  | static_cast<u32>(bytes[3]) << 24;
-        return u32_val;
+    u64 get_parsed_pos() const {
+        return parsed_bytes;
     }
 
-    static u64 parse_u64(std::ifstream& file, Endian endian) {
-        u64 u64_val {};
-        std::array<u64, 8> bytes {};
-        for (int i = 0; i < 8; i++) {
-            bytes[i] = file.get();
-        }
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
-        }
-        u64_val = static_cast<u64>(bytes[0])
-                | static_cast<u64>(bytes[1]) <<  8
-                | static_cast<u64>(bytes[2]) << 16
-                | static_cast<u64>(bytes[3]) << 24
-                | static_cast<u64>(bytes[4]) << 32
-                | static_cast<u64>(bytes[5]) << 40
-                | static_cast<u64>(bytes[6]) << 48
-                | static_cast<u64>(bytes[7]) << 56;
-        return u64_val;
-    }
-
-    static i64 parse_i64(std::ifstream& file, Endian endian) {
-        i64 i64_val {};
-        std::array<i64, 8> bytes {};
-        for (int i = 0; i < 8; i++) {
-            bytes[i] = file.get();
-        }
-        if (endian == Endian::big_endian) {
-            std::reverse(bytes.begin(), bytes.end());
-        }
-        i64_val =  static_cast<i64>(bytes[0])
-                 | static_cast<i64>(bytes[1]) <<  8
-                 | static_cast<i64>(bytes[2]) << 16
-                 | static_cast<i64>(bytes[3]) << 24
-                 | static_cast<i64>(bytes[4]) << 32
-                 | static_cast<i64>(bytes[5]) << 40
-                 | static_cast<i64>(bytes[6]) << 48
-                 | static_cast<i64>(bytes[7]) << 56;
-        return i64_val;
-    }
-
-    static void print_next(std::ifstream& file, Endian endian, int n) {
+    void skip(u64 n) {
+//        if (buffer_pos + n < buffer_size - 1) {
+//            buffer_pos += n;
+//        } else {
+//            throw std::runtime_error("Ass");
+//        }
+        //stupidly but fast to evoid realloc in skip: (TODO)
         for (int i = 0; i < n; i++) {
-            std::cout << file.get() << ' ';
-        }
-        std::cout << '\n';
-    }
-
-    static void skip(std::ifstream& file, u64 n) {
-        for (int i = 0; i < n; i++) {
-            file.get();
+            next<u8>();
         }
     }
 };
+
+std::ostream& operator<<(std::ostream& os, const BufferedReader& reader) {
+    os << '[';
+    for (int i = 0; i < reader.buffer.size() - 2; i++) {
+        os << static_cast<u32>(reader.buffer[i]) << ' ';
+    }
+    os << static_cast<u32>(reader.buffer[reader.buffer.size() - 2]) << "]";
+    os << static_cast<u32>(reader.buffer[reader.buffer.size() - 1]) << "\n";
+    return os;
+}

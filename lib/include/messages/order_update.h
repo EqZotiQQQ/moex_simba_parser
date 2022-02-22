@@ -34,15 +34,15 @@ public:
     static constexpr u64 synthetic_order= 0x200000000000; // - Признак синтетической заявки
     static constexpr u64 rfs_order= 0x400000000000; // - Заявка из системы RFS
 
-    void parse(std::ifstream& file, Endian endian) {
-        md_entry_id = Parsers::parse_i64(file, endian);
-        md_entry_px = Parsers::parse_i64(file, endian);
-        md_entry_size = Parsers::parse_i64(file, endian);
-        md_flags = Parsers::parse_u64(file, endian);
-        security_id = Parsers::parse_i32(file, endian);
-        rpt_seq = Parsers::parse_u32(file, endian);
-        md_update_action = Parsers::parse_u8(file);
-        md_entry_type = Parsers::parse_u8(file);
+    void parse(BufferedReader& parser) {
+        md_entry_id = parser.next<i64>();
+        md_entry_px = parser.next<i64>();
+        md_entry_size = parser.next<i64>();
+        md_flags = parser.next<u64>();
+        security_id = parser.next<i32>();
+        rpt_seq = parser.next<u32>();
+        md_update_action = parser.next<u8>();
+        md_entry_type = parser.next<u8>();
     }
 };
 

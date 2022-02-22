@@ -13,17 +13,12 @@ private:
 public:
     constexpr static u8 size {16};
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        timestamp_ms = Parsers::parse_u32(file, endian);
-        timestamp_us = Parsers::parse_u32(file, endian);
-        pack_length = Parsers::parse_u32(file, endian);
-        real_length = Parsers::parse_u32(file, endian);
-
-//        std::vector<u8> buffer = Parsers::parse(file, size);
-//        timestamp_ms = Parsers::collapse<u32>(buffer, endian, 0, 3);
-//        timestamp_us = Parsers::collapse<u32>(buffer, endian, 4, 7);
-//        pack_length = Parsers::collapse<u32>(buffer, endian, 8, 11);
-//        real_length = Parsers::collapse<u32>(buffer, endian, 12, 15);
+    u8 parse(BufferedReader& parser) {
+        timestamp_ms = parser.next<u32>();
+        timestamp_us = parser.next<u32>();
+        pack_length = parser.next<u32>();
+        real_length = parser.next<u32>();
+        return size;
     }
 
     u32 get_length() const noexcept {
@@ -41,9 +36,11 @@ public:
 
     PcapPacket() {}
 
-    void parse(std::ifstream& file, Endian endian) {
-        header.parse(file, endian);
-        udp_packet.parse(file, endian, header.get_length());
+    u64 parse(BufferedReader& parser) {
+        u64 parsed_bytes {};
+        parsed_bytes += header.parse(parser);
+        parsed_bytes += udp_packet.parse(parser, header.get_length());
+        return parsed_bytes;
     }
 };
 

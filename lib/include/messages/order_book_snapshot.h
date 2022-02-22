@@ -28,14 +28,14 @@ public:
     static constexpr u8 ask = '1';
     static constexpr u8 empty_book = 'J';
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        md_entry_id = Parsers::parse_i64(file, endian);
-        transact_time = Parsers::parse_u64(file, endian);
-        md_entry_px = Parsers::parse_i64(file, endian);
-        md_entry_size = Parsers::parse_i64(file, endian);
-        trade_id = Parsers::parse_i64(file, endian);
-        md_flags = Parsers::parse_u64(file, endian);
-        md_entry_type = Parsers::parse_u8(file);
+    void parse(BufferedReader& parser) {
+        md_entry_id = parser.next<i64>();
+        transact_time = parser.next<u64>();
+        md_entry_px = parser.next<i64>();
+        md_entry_size = parser.next<i64>();
+        trade_id = parser.next<i64>();
+        md_flags = parser.next<u64>();
+        md_entry_type = parser.next<u8>();
     }
 };
 
@@ -43,26 +43,26 @@ class OrderBookSnapshotPacket {
     template <typename OutPipe>
     friend OutPipe& operator<<(OutPipe& os, const OrderBookSnapshotPacket& order);
 private:
-    int32_t security_id;                            //  ID тулзы
-    uint32_t last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
-    uint32_t rpt_seq;                               //  Порядковый номер инкрементального обновления
-    uint32_t exchange_trading_session_id;           //  ID торговой сделки
-    uint16_t block_len;                             //  Длина блока
-    uint8_t no_md_entries;                          //  Размер пачки заявок
+    i32 security_id;                            //  ID тулзы
+    u32 last_msg_seq_num_processed;            //  Номер последнего обработанного сообщения
+    u32 rpt_seq;                               //  Порядковый номер инкрементального обновления
+    u32 exchange_trading_session_id;           //  ID торговой сделки
+    u16 block_len;                             //  Длина блока
+    u8 no_md_entries;                          //  Размер пачки заявок
     std::vector<OrderBookSnapshot> md_entries;      //  Размер пачки заявок
 public:
     static constexpr u8 size = 19; // total size = 19 + sizeofOrderBookSnapshot * len(bids_slice)
 public:
-    void parse(std::ifstream& file, Endian endian) {
-        security_id = Parsers::parse_i32(file, endian);
-        last_msg_seq_num_processed = Parsers::parse_u32(file, endian);
-        rpt_seq = Parsers::parse_u32(file, endian);
-        exchange_trading_session_id = Parsers::parse_u32(file, endian);
-        block_len = Parsers::parse_u16(file, endian);
-        no_md_entries = Parsers::parse_u8(file);
+    void parse(BufferedReader& parser) {
+        security_id = parser.next<i32>();
+        last_msg_seq_num_processed = parser.next<u32>();
+        rpt_seq = parser.next<u32>();
+        exchange_trading_session_id = parser.next<u32>();
+        block_len = parser.next<u16>();
+        no_md_entries = parser.next<u8>();
         for (int i = 0; i < no_md_entries; i++) {
             OrderBookSnapshot snapshot {};
-            snapshot.parse(file, endian);
+            snapshot.parse(parser);
             md_entries.emplace_back(snapshot);
         }
     }
