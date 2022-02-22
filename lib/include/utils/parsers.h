@@ -13,7 +13,7 @@
 class BufferedReader {
     friend std::ostream& operator<<(std::ostream& os, const BufferedReader& reader);
 private:
-    static constexpr u64 buffer_size {1024};
+    static constexpr u64 buffer_size {2048};
     u16 buffer_pos {};
     u64 parsed_bytes {};
     std::array<u8, buffer_size> buffer {0};
@@ -56,9 +56,25 @@ public:
         return parsed_bytes;
     }
 
+    u64 parse_using_read() {
+        u64 left = parsed_bytes - buffer_pos;
+        for (int i = 0; i < left; i++) {
+            buffer[i] = buffer[buffer_size - left + i];
+        }
+        file.read((char*) &buffer[left], buffer_size - left);  // it .get() reads N-1 bytes from file and place to the end '/0'; get reads untill '/n' symbol, lol
+
+        if (!file.good()) {
+            std::cerr << "Bits: " << file.good() << file.bad() << file.fail() << file.eof() << std::endl;
+        }
+        u64 gcount = file.gcount();
+        parsed_bytes = gcount + left;
+        return parsed_bytes;
+    }
+
     u64 default_parse_method() {
 //        return parse();
-        return parse_by_byte();
+//        return parse_by_byte();
+        return parse_using_read();
     }
 
     template<typename T> // T = i32, i16, ...

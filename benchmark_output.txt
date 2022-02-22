@@ -75,3 +75,86 @@ BM_SomeFunction/1000          7934 us         7933 us           88
 BM_SomeFunction/10000        77803 us        77791 us            9
 BM_SomeFunction/100000      807738 us       807640 us            1
 BM_SomeFunction/1000000   10542148 us     10540543 us            1
+
+10 bytes buffer with read()
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          6093 us         6092 us          113
+BM_SomeFunction/10000        61946 us        61930 us           11
+BM_SomeFunction/100000      601997 us       601935 us            1
+BM_SomeFunction/1000000    7771835 us      7770968 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          6145 us         6144 us          110
+BM_SomeFunction/10000        59151 us        59144 us           12
+BM_SomeFunction/100000      614725 us       614306 us            1
+BM_SomeFunction/1000000    7941947 us      7931739 us            1
+
+
+512 bytes buffer with read()
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3928 us         3927 us          178
+BM_SomeFunction/10000        38101 us        38095 us           18
+BM_SomeFunction/100000      395458 us       395410 us            2
+BM_SomeFunction/1000000    4831810 us      4831252 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3988 us         3987 us          174
+BM_SomeFunction/10000        38389 us        38383 us           18
+BM_SomeFunction/100000      401335 us       401279 us            2
+BM_SomeFunction/1000000    4880444 us      4870402 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3934 us         3934 us          178
+BM_SomeFunction/10000        38083 us        38079 us           18
+BM_SomeFunction/100000      395483 us       395440 us            2
+BM_SomeFunction/1000000    4845961 us      4845449 us            1
+
+
+1024 bytes buffer with read()
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          4088 us         4088 us          171
+BM_SomeFunction/10000        41319 us        41310 us           17
+BM_SomeFunction/100000      415707 us       415661 us            2
+BM_SomeFunction/1000000    5215295 us      5214523 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          4092 us         4091 us          171
+BM_SomeFunction/10000        40427 us        40422 us           17
+BM_SomeFunction/100000      417076 us       417034 us            2
+BM_SomeFunction/1000000    5168937 us      5168383 us            1
+
+
+2048 with read
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3826 us         3825 us          183
+BM_SomeFunction/10000        37956 us        37950 us           19
+BM_SomeFunction/100000      386825 us       386778 us            2
+BM_SomeFunction/1000000    4737574 us      4736919 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3849 us         3848 us          181
+BM_SomeFunction/10000        38141 us        38135 us           19
+BM_SomeFunction/100000      392158 us       392107 us            2
+BM_SomeFunction/1000000    4786128 us      4785450 us            1
+
+With 4096 and more benchmark goes degrade, or it shows same results
+
+
+
+
+
+
+
