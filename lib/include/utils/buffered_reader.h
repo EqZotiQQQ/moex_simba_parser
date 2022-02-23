@@ -99,7 +99,7 @@ public:
 
     template<typename T>
     T next() {
-        return next<T>(endian);
+        return next<T>(this->endian);
     }
 
     std::array<u8, 6> next_mac() {

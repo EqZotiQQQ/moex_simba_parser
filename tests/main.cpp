@@ -27,15 +27,6 @@ TEST(ParseSample, Parse_1000) {
     parser.parse();
 }
 
-TEST(ParseSample, Parse_39089) {
-    const std::string in = "../../sample.pcap";
-    const std::string out = "../../decoded_39089_" + std::to_string(epoch()) + ".txt";
-    int bound = 1000;
-
-    PcapParser parser(in, out, bound);
-    parser.parse();
-}
-
 TEST(ParseSample, Parse_10000) {
     const std::string in = "../../sample.pcap";
     const std::string out = "../../decoded_10000_" + std::to_string(epoch()) + ".txt";

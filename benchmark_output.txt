@@ -1,5 +1,6 @@
+Debug:
 19.02.2022
-Голая хрень, без всего, парсящая по одному
+parse by byte using get()
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -14,8 +15,6 @@ BM_SomeFunction/1000          6256 us         6255 us          113
 BM_SomeFunction/10000        60560 us        60548 us           11
 BM_SomeFunction/100000      641979 us       641815 us            1
 BM_SomeFunction/1000000    8630172 us      8628790 us            1
-
-
 
 parse by byte to 32 bytes buffer
 ------------------------------------------------------------------
@@ -161,5 +160,33 @@ BM_SomeFunction/1000          3801 us         3801 us          184
 BM_SomeFunction/10000        36808 us        36803 us           19
 BM_SomeFunction/100000      376413 us       376357 us            2
 BM_SomeFunction/1000000    4847403 us      4846795 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3290 us         3289 us          208
+BM_SomeFunction/10000        32098 us        32094 us           22
+BM_SomeFunction/100000      328120 us       328081 us            2
+BM_SomeFunction/1000000    4440429 us      4432331 us            1
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3314 us         3314 us          211
+BM_SomeFunction/10000        32724 us        32720 us           21
+BM_SomeFunction/100000      338139 us       338101 us            2
+BM_SomeFunction/1000000    4406277 us      4405753 us            1
 
-
+release:
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000           309 us          309 us         2063
+BM_SomeFunction/10000         3017 us         3017 us          232
+BM_SomeFunction/100000       32028 us        32022 us           22
+BM_SomeFunction/1000000     418663 us       418585 us            2
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000           297 us          297 us         2357
+BM_SomeFunction/10000         2943 us         2943 us          234
+BM_SomeFunction/100000       31426 us        31417 us           22
+BM_SomeFunction/1000000     406378 us       406297 us            2

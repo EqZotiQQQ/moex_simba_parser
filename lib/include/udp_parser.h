@@ -71,12 +71,18 @@ template <typename OutPipe>
 OutPipe& operator<<(OutPipe& os, const UDPHeader& header) {
     os << "== UDP Header: ==\n";
     os << std::dec;
-    os << "Source IP: "        << static_cast<u16>(header.source_ip[0]) << ":" << static_cast<u16>(header.source_ip[1]) << ":" << static_cast<u16>(header.source_ip[2]) << ":" << static_cast<u16>(header.source_ip[3]) << '\n';
-    os << "Destination IP: "   << static_cast<u16>(header.dest_ip[0]) << ":" << static_cast<u16>(header.dest_ip[1]) << ":" << static_cast<u16>(header.dest_ip[2]) << ":" << static_cast<u16>(header.dest_ip[3]) << '\n';
+    os << "Source IP: "        << static_cast<u16>(header.source_ip[0]) << ':'
+                               << static_cast<u16>(header.source_ip[1]) << ':'
+                               << static_cast<u16>(header.source_ip[2]) << ':'
+                               << static_cast<u16>(header.source_ip[3]) << '\n';
+    os << "Destination IP: "   << static_cast<u16>(header.dest_ip[0]) << ':'
+                               << static_cast<u16>(header.dest_ip[1]) << ':'
+                               << static_cast<u16>(header.dest_ip[2]) << ':'
+                               << static_cast<u16>(header.dest_ip[3]) << '\n';
     os << "Source port: "      << static_cast<u16>(header.source_port) << '\n';
     os << "Destination port: " << static_cast<u16>(header.destination_port) << '\n';
     os << "Check sum: "        << static_cast<u16>(header.check_sum) << '\n';
-    os << "Length:  "          << static_cast<u16>(header.length) << '\n';
+    os << "Length: "           << static_cast<u16>(header.length) << '\n';
     os << "Check sum udp: "    << static_cast<u16>(header.check_sum_udp) << '\n';
     os << "== UDP Header end ==\n";
     return os;

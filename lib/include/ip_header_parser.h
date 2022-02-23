@@ -115,15 +115,24 @@ template <typename OutPipe>
 OutPipe& operator<<(OutPipe& os, const IpHeader& header) {
     os << "== IpHeader ==\n";
     os << std::setw(2) << std::right << std::hex;
-    os << "Destination mac: " << static_cast<u16>(header.destination_mac[0]) << ":" << static_cast<u16>(header.destination_mac[1]) << ":"    << static_cast<u16>(header.destination_mac[2]) << ":"        << static_cast<u16>(header.destination_mac[3]) << ":"        << static_cast<u16>(header.destination_mac[4]) << ":"        << static_cast<u16>(header.destination_mac[5]) << "\n";
-    os << "Source mac: " << static_cast<u16>(header.source_mac[0]) << ":" << static_cast<u16>(header.source_mac[1]) << ":"        << static_cast<u16>(header.source_mac[2]) << ":"        << static_cast<u16>(header.source_mac[3]) << ":"        << static_cast<u16>(header.source_mac[4]) << ":"        << static_cast<u16>(header.source_mac[5]) << "\n";
+    os << "Destination mac: " << static_cast<u16>(header.destination_mac[0]) << ":"
+                              << static_cast<u16>(header.destination_mac[1]) << ":"
+                              << static_cast<u16>(header.destination_mac[2]) << ":"
+                              << static_cast<u16>(header.destination_mac[3]) << ":"
+                              << static_cast<u16>(header.destination_mac[4]) << ":"
+                              << static_cast<u16>(header.destination_mac[5]) << "\n";
+    os << "Source mac: " << static_cast<u16>(header.source_mac[0]) << ":"
+                         << static_cast<u16>(header.source_mac[1]) << ":"
+                         << static_cast<u16>(header.source_mac[2]) << ":"
+                         << static_cast<u16>(header.source_mac[3]) << ":"
+                         << static_cast<u16>(header.source_mac[4]) << ":"
+                         << static_cast<u16>(header.source_mac[5]) << "\n";
     os << std::dec;
     os << "Protocol version: " << get_type(header.protocol_version) << '\n';
     os << "Version: " << static_cast<u16>(get_version(header.strange_field)) << '\n';
     os << "Header length: " << static_cast<u16>(get_header_length(header.strange_field)) << '\n';
     os << "Differential Services Field: " << get_diff_serv(header.differentiated_services_field) << '\n';
     os << "Total Length: " << header.total_length << '\n';
-//    os << "Flags and Fragment offset: (TODO) " << header.flags_and_fragment_offset << '\n';
     os << "Reserved bit: "   << reserved_bit(header.flags_and_fragment_offset) << '\n';
     os << "Don't fragment: " << dont_fragment(header.flags_and_fragment_offset) << '\n';
     os << "More fragments: " << more_fragments(header.flags_and_fragment_offset) << '\n';
