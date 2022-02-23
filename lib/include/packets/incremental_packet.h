@@ -2,7 +2,7 @@
 
 #include <fstream>
 #include "types/typenames.h"
-#include "utils/parsers.h"
+#include "utils/buffered_reader.h"
 #include "sbe/sbe_message.h"
 
 class IncrementalPacketHeader { // Little endian

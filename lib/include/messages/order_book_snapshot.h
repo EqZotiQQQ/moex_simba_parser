@@ -3,7 +3,7 @@
 #include <vector>
 #include "types/typenames.h"
 #include "types/enumerations.h"
-#include "utils/parsers.h"
+#include "utils/buffered_reader.h"
 
 
 class OrderBookSnapshot {

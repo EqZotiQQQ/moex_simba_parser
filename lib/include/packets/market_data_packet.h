@@ -4,7 +4,7 @@
 #include "messages/order_book_snapshot.h"
 #include "messages/order_execution.h"
 #include "messages/order_update.h"
-#include "utils/parsers.h"
+#include "utils/buffered_reader.h"
 
 class MarketDataPacketHeader {
     template <typename OutPipe>

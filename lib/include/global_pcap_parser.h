@@ -9,7 +9,7 @@
 #include "types/enumerations.h"
 #include "types/typenames.h"
 #include "types/constants.h"
-#include "utils/parsers.h"
+#include "utils/buffered_reader.h"
 #include "udp_parser.h"
 #include "pcap_packet_parser.h"
 

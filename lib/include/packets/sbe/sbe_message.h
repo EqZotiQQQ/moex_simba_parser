@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <optional>
 #include "types/typenames.h"
-#include "utils/parsers.h"
+#include "utils/buffered_reader.h"
 #include "messages/order_update.h"
 #include "global_pcap_parser.h"
 #include "messages/order_execution.h"

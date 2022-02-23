@@ -26,7 +26,7 @@ set(HEADERS
         include/types/enumerations.h
         include/types/constants.h
         include/types/typenames.h
-        include/utils/parsers.h
+        include/utils/buffered_reader.h
 )
 
 include_directories(include)

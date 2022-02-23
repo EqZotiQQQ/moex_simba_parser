@@ -65,10 +65,8 @@ public:
     T next(Endian provided_endian) {
         u8 t_size = sizeof(T);
          u64 diapason = parsed_bytes - buffer_pos;
-        if (!is_init || t_size > diapason) {
+        if (t_size > diapason) {
             default_parse_method();
-
-            is_init = true;
             buffer_pos = 0;
         }
         T value {};
