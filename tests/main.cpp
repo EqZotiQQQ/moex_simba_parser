@@ -63,7 +63,6 @@ TEST(BufferedReaderTest, parse_endian) {
     std::cout << endian << '\n';
     ASSERT_EQ(little_endian_marker, endian);
     u16 major = reader.next<u16>();
-    reader.get_parsed_pos();
     std::cout << major << '\n';
     ASSERT_EQ(major, 2);
     u16 minor = reader.next<u16>();
@@ -89,23 +88,18 @@ TEST(BufferedReaderTest, parse_u64) {
     BufferedReader reader {in, Endian::little_endian};
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 }
 
@@ -115,22 +109,17 @@ TEST(BufferedReaderTest, parse_u32) {
     std::ifstream f;
     BufferedReader reader {in, Endian::little_endian};
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 }
 
@@ -140,23 +129,18 @@ TEST(BufferedReaderTest, parse_u16) {
     BufferedReader reader {in, Endian::little_endian};
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 }
 
@@ -166,31 +150,24 @@ TEST(BufferedReaderTest, parse_u8) {
     BufferedReader reader {in, Endian::little_endian};
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
-    std::cout << "Parsed bytes: " << reader.get_parsed_pos() << '\n';
     std::cout << reader << '\n';
 }
 

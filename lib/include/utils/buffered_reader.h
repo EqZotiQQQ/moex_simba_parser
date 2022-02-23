@@ -38,12 +38,7 @@ private:
             buffer[i] = buffer[buffer_size - left + i];
         }
         file.read((char*) &buffer[left], buffer_size - left);  // it .get() reads N-1 bytes from file and place to the end '/0'; get reads untill '/n' symbol, lol
-
-        if (!file.good()) {
-            std::cerr << "Bits: " << file.good() << file.bad() << file.fail() << file.eof() << std::endl;
-        }
-        u64 gcount = file.gcount();
-        parsed_bytes = gcount + left;
+        parsed_bytes = file.gcount() + left;
         return parsed_bytes;
     }
 public:
@@ -64,8 +59,7 @@ public:
     template<typename T>
     T next(Endian provided_endian) {
         u8 t_size = sizeof(T);
-         u64 diapason = parsed_bytes - buffer_pos;
-        if (t_size > diapason) {
+        if (t_size > parsed_bytes - buffer_pos) {
             default_parse_method();
             buffer_pos = 0;
         }
@@ -115,10 +109,6 @@ public:
             ip_addr[i] = next<u8>();
         }
         return ip_addr;
-    }
-
-    u64 get_parsed_pos() const {
-        return parsed_bytes;
     }
 };
 
