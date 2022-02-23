@@ -58,7 +58,6 @@ TEST(BufferedReaderTest, parse_endian) {
     const std::string in = "../../sample.pcap";
     BufferedReader reader {in, Endian::little_endian};
     auto little_endian_marker = 0xD4C3B2A1;
-    ASSERT_TRUE(reader.file.is_open());
     u32 endian = reader.next<u32>(Endian::big_endian);
     std::cout << endian << '\n';
     ASSERT_EQ(little_endian_marker, endian);

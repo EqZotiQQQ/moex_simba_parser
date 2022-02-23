@@ -14,35 +14,29 @@
 
 class PcapParser {
 private:
-    std::ifstream in;
     std::optional<std::ofstream> out;
+    BufferedReader parser;
     GlobalPcapPacket pcap_packet;
     OutputFromat out_format;
 public:
     PcapParser(const std::string& in_path, const std::string& out_path, u32 bound):
-            in(in_path, std::ios::in | std::ios::out | std::ios::binary),
             out(out_path),
             pcap_packet(bound),
-            out_format(OutputFromat::file) {
-        if (!in.is_open()) {
-            throw FileNotFoundException();
-        }
+            out_format(OutputFromat::file),
+            parser(in_path, Endian::big_endian) {
         if (!out->is_open()) {
             throw FileNotFoundException();
         }
     }
 
     PcapParser(const std::string& in_path, u32 bound, OutputFromat out_format = OutputFromat::console):
-            in(in_path, std::ios::in | std::ios::out | std::ios::binary),
             out({}),
             pcap_packet(bound),
-            out_format(out_format) {
-        if (!in.is_open()) {
-            throw FileNotFoundException();
-        }
+            out_format(out_format),
+            parser(in_path, Endian::big_endian) {
     }
 
     void parse() {
-        pcap_packet.parse(in, out, out_format);
+        pcap_packet.parse(parser, out, out_format);
     }
 };

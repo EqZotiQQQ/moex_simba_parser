@@ -8,7 +8,7 @@
 #include <cstring>
 
 #include "types/typenames.h"
-
+#include "exceptions.h"
 
 class BufferedReader {
     friend std::ostream& operator<<(std::ostream& os, const BufferedReader& reader);
@@ -18,7 +18,8 @@ private:
     u64 parsed_bytes {};
     std::array<u8, buffer_size> buffer {0};
     bool is_init = false;
-
+    std::ifstream file;
+    Endian endian;
 private:
     u64 parse_by_byte() {
         u64 left = parsed_bytes - buffer_pos;
@@ -42,14 +43,20 @@ private:
         return parsed_bytes;
     }
 public:
-    std::ifstream file;
-    Endian endian {};
-public:
     BufferedReader(const std::string& in, Endian endian):
         file(in, std::ios::in | std::ios::out | std::ios::binary),
-        endian(endian) {}
+        endian(endian) {
+
+        if (!file.is_open()) {
+            throw FileNotFoundException();
+        }
+    }
 
     BufferedReader() = default;
+
+    void set_endian(Endian endian) {
+        this->endian = endian;
+    }
 
     u64 default_parse_method() {
 //        return parse_by_byte();

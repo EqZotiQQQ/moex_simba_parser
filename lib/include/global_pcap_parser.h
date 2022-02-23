@@ -33,7 +33,7 @@ public:
 
     int parse(BufferedReader& parser) {
         magic_number = parser.next<u32>();
-        parser.endian = validate_endians();
+        parser.set_endian(validate_endians());
         version_major = parser.next<u16>();
         version_minor = parser.next<u16>();
         time_zone = parser.next<i32>();
@@ -63,19 +63,14 @@ private:
 
     PcapPacket pcap_parser;
 
-    BufferedReader parser;
-
     u32 bound {};
 
     Endian endian {};
 
 public:
-    GlobalPcapPacket(u32 bound): parser{}, bound(bound) {}
+    GlobalPcapPacket(u32 bound): bound(bound) {}
 
-    void parse(std::ifstream& file, std::optional<std::ofstream>& out, OutputFromat out_format) {
-
-        parser.file = std::move(file);
-        parser.endian = Endian::big_endian;
+    void parse(BufferedReader& parser, std::optional<std::ofstream>& out, OutputFromat out_format) {
 
         global_pcap_header.parse(parser);
 
