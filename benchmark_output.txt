@@ -17,8 +17,7 @@ BM_SomeFunction/1000000    8630172 us      8628790 us            1
 
 
 
-Парсит по одному в буфер
-Буфер 32 байта
+parse by byte to 32 bytes buffer
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -34,7 +33,7 @@ BM_SomeFunction/10000        77046 us        77027 us            9
 BM_SomeFunction/100000      797993 us       797863 us            1
 BM_SomeFunction/1000000   10248939 us     10247254 us            1
 
-Буфер 1024 байта
+parse by byte to 1024 bytes buffer
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -58,7 +57,7 @@ BM_SomeFunction/10000        69929 us        69914 us           10
 BM_SomeFunction/100000      738849 us       738654 us            1
 BM_SomeFunction/1000000    9501079 us      9498091 us            1
 
-2кб
+parse by byte to 2048 bytes buffer
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -67,7 +66,7 @@ BM_SomeFunction/10000        69718 us        69647 us           10
 BM_SomeFunction/100000      730208 us       729508 us            1
 BM_SomeFunction/1000000    9616022 us      9602766 us            1
 
-8 байт
+parse by byte to 8192 bytes buffer
 ------------------------------------------------------------------
 Benchmark                        Time             CPU   Iterations
 ------------------------------------------------------------------
@@ -154,7 +153,13 @@ With 4096 and more benchmark goes degrade, or it shows same results
 
 
 
-
-
+2048 with optimal skip
+------------------------------------------------------------------
+Benchmark                        Time             CPU   Iterations
+------------------------------------------------------------------
+BM_SomeFunction/1000          3801 us         3801 us          184
+BM_SomeFunction/10000        36808 us        36803 us           19
+BM_SomeFunction/100000      376413 us       376357 us            2
+BM_SomeFunction/1000000    4847403 us      4846795 us            1
 
 

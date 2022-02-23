@@ -77,7 +77,9 @@ public:
     }
 
     u64 parse(BufferedReader& parser) {
+        u_int64_t current_file_pos = parser.file.tellg();
         header.parse(parser);
+        u_int64_t current_file_pos1 = parser.file.tellg();
         size += SBEHeader::size_bytes;
         if (message_id.contains(header.get_template_id())) {
             switch (message_id.at(header.get_template_id()).template_id) {

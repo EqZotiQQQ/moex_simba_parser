@@ -18,17 +18,8 @@ private:
     u64 parsed_bytes {};
     std::array<u8, buffer_size> buffer {0};
     bool is_init = false;
-public:
-    std::ifstream file;
-    Endian endian {};
-public:
-    BufferedReader(const std::string& in, Endian endian):
-        file(in, std::ios::in | std::ios::out | std::ios::binary),
-        endian(endian) {}
 
-    BufferedReader() = default;
-
-
+private:
     u64 parse_by_byte() {
         u64 left = parsed_bytes - buffer_pos;
         for (int i = 0; i < left; i++) {
@@ -39,21 +30,6 @@ public:
         }
         parsed_bytes = buffer_size;
         return buffer_size;
-    }
-
-    u64 parse() {
-        u64 left = parsed_bytes - buffer_pos;
-        for (int i = 0; i < left; i++) {
-            buffer[i] = buffer[buffer_size - left + i - 1];
-        }
-        file.get((char*) &buffer[left], buffer_size - left);  // it .get() reads N-1 bytes from file and place to the end '/0'; get reads untill '/n' symbol, lol
-
-        if (!file.good()) {
-            std::cerr << "Bits: " << file.good() << file.bad() << file.fail() << file.eof() << std::endl;
-        }
-        u64 gcount = file.gcount();
-        parsed_bytes = gcount + left;
-        return parsed_bytes;
     }
 
     u64 parse_using_read() {
@@ -70,17 +46,25 @@ public:
         parsed_bytes = gcount + left;
         return parsed_bytes;
     }
+public:
+    std::ifstream file;
+    Endian endian {};
+public:
+    BufferedReader(const std::string& in, Endian endian):
+        file(in, std::ios::in | std::ios::out | std::ios::binary),
+        endian(endian) {}
+
+    BufferedReader() = default;
 
     u64 default_parse_method() {
-//        return parse();
 //        return parse_by_byte();
         return parse_using_read();
     }
 
-    template<typename T> // T = i32, i16, ...
+    template<typename T>
     T next(Endian provided_endian) {
         u8 t_size = sizeof(T);
-        u64 diapason = parsed_bytes - buffer_pos;
+         u64 diapason = parsed_bytes - buffer_pos;
         if (!is_init || t_size > diapason) {
             default_parse_method();
 
@@ -98,6 +82,20 @@ public:
         }
         buffer_pos += t_size;
         return value;
+    }
+
+    void skip(i64 n) {
+        if (n == 0) return;
+        if (buffer_size > buffer_pos + n) {
+            buffer_pos += n;
+        } else {
+            u64 left_in_buffer = buffer_size - buffer_pos;
+            u64 current_file_pos = file.tellg();
+            u64 shift = current_file_pos + n - left_in_buffer;
+            file.seekg(shift);
+            file.read((char*) &buffer[0], buffer_size);
+            buffer_pos = 0;
+        }
     }
 
     template<typename T>
@@ -124,26 +122,13 @@ public:
     u64 get_parsed_pos() const {
         return parsed_bytes;
     }
-
-    void skip(u64 n) {
-//        if (buffer_pos + n < buffer_size - 1) {
-//            buffer_pos += n;
-//        } else {
-//            throw std::runtime_error("Ass");
-//        }
-        //stupidly but fast to evoid realloc in skip: (TODO)
-        for (int i = 0; i < n; i++) {
-            next<u8>();
-        }
-    }
 };
 
 std::ostream& operator<<(std::ostream& os, const BufferedReader& reader) {
     os << '[';
-    for (int i = 0; i < reader.buffer.size() - 2; i++) {
+    for (int i = 0; i < reader.buffer.size() - 1; i++) {
         os << static_cast<u32>(reader.buffer[i]) << ' ';
     }
-    os << static_cast<u32>(reader.buffer[reader.buffer.size() - 2]) << "]";
-    os << static_cast<u32>(reader.buffer[reader.buffer.size() - 1]) << "\n";
+    os << static_cast<u32>(reader.buffer[reader.buffer.size() - 1]) << "]\n";
     return os;
 }

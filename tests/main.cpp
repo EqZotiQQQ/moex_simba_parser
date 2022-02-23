@@ -27,6 +27,15 @@ TEST(ParseSample, Parse_1000) {
     parser.parse();
 }
 
+TEST(ParseSample, Parse_39089) {
+    const std::string in = "../../sample.pcap";
+    const std::string out = "../../decoded_39089_" + std::to_string(epoch()) + ".txt";
+    int bound = 1000;
+
+    PcapParser parser(in, out, bound);
+    parser.parse();
+}
+
 TEST(ParseSample, Parse_10000) {
     const std::string in = "../../sample.pcap";
     const std::string out = "../../decoded_10000_" + std::to_string(epoch()) + ".txt";
@@ -209,6 +218,28 @@ TEST(ParseSample, Parse_00_to_ff) {
     reader.next<i64>();
     std::cout << reader << '\n';
     reader.next<i64>();
+    std::cout << reader << '\n';
+}
+
+TEST(ParseSample, skip_10) {
+    const std::string in = "../../tests/00_to_ff.bin";
+    BufferedReader reader {in, Endian::little_endian};
+    reader.next<u32>();
+    std::cout << reader << '\n';
+    reader.skip(10);
+    std::cout << reader << '\n';
+    reader.next<u32>();
+    std::cout << reader << '\n';
+}
+
+TEST(ParseSample, skip_1) {
+    const std::string in = "../../tests/00_to_ff.bin";
+    BufferedReader reader {in, Endian::little_endian};
+    reader.next<u32>();
+    std::cout << reader << '\n';
+    reader.skip(20);
+    std::cout << reader << '\n';
+    reader.next<u32>();
     std::cout << reader << '\n';
 }
 
