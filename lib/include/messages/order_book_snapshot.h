@@ -2,8 +2,8 @@
 
 #include <vector>
 #include "types/typenames.h"
-#include "types/enumerations.h"
 #include "utils/buffered_reader.h"
+#include "types/constants.h"
 
 
 class OrderBookSnapshot {

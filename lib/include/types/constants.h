@@ -30,14 +30,9 @@ namespace MessageType {
     constexpr u16 MarketDataRequest = 1002;
 }
 
-enum Endian {
-    little_endian,
-    big_endian,
-};
-
-std::ostream& operator<<(std::ostream& os, Endian endian) {
+std::ostream& operator<<(std::ostream& os, std::endian endian) {
     os << "============================== Endian: =======================================\n";
-    if (endian == Endian::little_endian) {
+    if (endian == std::endian::little) {
         os << "Little endian\n";
     } else {
         os << "Big endian\n";

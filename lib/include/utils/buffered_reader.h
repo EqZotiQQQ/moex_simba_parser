@@ -11,6 +11,7 @@
 #include "types/typenames.h"
 #include "exceptions.h"
 
+
 class BufferedReader {
     friend std::ostream& operator<<(std::ostream& os, const BufferedReader& reader);
 private:

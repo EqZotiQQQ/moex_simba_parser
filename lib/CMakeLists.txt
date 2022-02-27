@@ -23,7 +23,6 @@ set(HEADERS
         include/packets/snapshot_packet.h
         include/packets/market_data_packet.h
         include/packets/sbe/sbe_message.h
-        include/types/enumerations.h
         include/types/constants.h
         include/types/typenames.h
         include/utils/buffered_reader.h

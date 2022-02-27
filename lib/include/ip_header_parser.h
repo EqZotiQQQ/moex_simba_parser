@@ -28,7 +28,7 @@ private:
 public:
     constexpr static u16 size = {14};
 public:
-    IpHeader() {}
+    IpHeader() = default;
     void parse(BufferedReader& parser) {
         destination_mac = parser.next_mac();
         source_mac = parser.next_mac();

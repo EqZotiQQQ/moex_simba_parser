@@ -8,12 +8,16 @@
 
 #include "udp_parser.h"
 #include "pcap_packet_parser.h"
-#include "types/enumerations.h"
 #include "types/typenames.h"
-#include "types/constants.h"
 #include "utils/buffered_reader.h"
 
-const char* get_message_type(u32 type) {
+enum OutputFromat {
+    console = 0,
+    file = 1,
+    disabled = 2,
+};
+
+const char* to_endian(u32 type) {
     switch (type) {
         case Constants::big_endian_milliseconds: return "Big endian";
         case Constants::little_endian_milliseconds: return "Little endian";
@@ -34,9 +38,6 @@ private:
     u32 sig_figs {};
     u32 snap_len {};
     u32 network {}; // replace it with LinkType later ...
-
-    Endian endian {};
-
 public:
     static constexpr u8 size = {24};
 
@@ -74,7 +75,22 @@ private:
 
     u32 bound {};
 
-    Endian endian {};
+    template <typename T>
+    void out(OutputFromat out_format, T data, std::optional<std::ofstream>& out) {
+        switch (out_format) {
+            case OutputFromat::file: {
+                out.value() << data;
+                break;
+            }
+            case OutputFromat::console: {
+                std::cout << data;
+                break;
+            }
+            case OutputFromat::disabled: {
+                break;
+            }
+        }
+    }
 
 public:
     GlobalPcapPacket(u32 bound): bound(bound) {}
@@ -85,36 +101,11 @@ public:
 
         u32 parsed_packets {};
 
-        switch (out_format) {
-            case OutputFromat::file: {
-                out.value() << global_pcap_header;
-                break;
-            }
-            case OutputFromat::console: {
-                std::cout << global_pcap_header;
-                break;
-            }
-            default: break;
-        }
+        this->out(out_format, global_pcap_header, out);
 
         while (parsed_packets++ < bound) {
-            if (parsed_packets == 76) {
-
-            }
             pcap_parser.parse(parser);
-            switch (out_format) {
-                case OutputFromat::file: {
-                    out.value() << "Packet number " << parsed_packets << '\n';
-                    out.value() << pcap_parser << std::endl;
-                    break;
-                }
-                case OutputFromat::console: {
-                    std::cout << "Packet number " << parsed_packets << '\n';
-                    std::cout << pcap_parser << std::endl;
-                    break;
-                }
-                default: break;
-            }
+            this->out(out_format, pcap_parser, out);
         }
     }
 };
@@ -132,7 +123,7 @@ OutPipe& operator<<(OutPipe& os, const GlobalPcapHeader& ip_header) {
     os << std::setw(2) << std::right << std::hex;
     os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
     os << std::dec;
-    os << "Endian: " << get_message_type(ip_header.magic_number) << '\n';
+    os << "Endian: " << to_endian(ip_header.magic_number) << '\n';
     os << "Version Major: " << ip_header.version_major << '\n';
     os << "Version Minor: " << ip_header.version_minor << '\n';
     os << "Time zone: " << ip_header.time_zone << '\n';
