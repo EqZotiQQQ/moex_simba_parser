@@ -14,27 +14,25 @@
 #include "messages/order_best_prices.h"
 #include "exceptions.h"
 
-struct MessageId {
-    u16 template_id {};
-    std::string message_name {};
-};
-
-const static std::unordered_map<i32, MessageId> message_id {
-    std::pair(1, MessageId{MessageType::Hearthbeat, "Hearthbeath"}),
-    std::pair(2, MessageId{MessageType::SequenceReset, "SequenceReset"}),
-    std::pair(3, MessageId{MessageType::BestPrices, "BestPrices"}),
-    std::pair(4, MessageId{MessageType::EmptyBook, "EmptyBook"}),
-    std::pair(5, MessageId{MessageType::OrderUpdate, "OrderUpdate"}),
-    std::pair(6, MessageId{MessageType::OrderExecution, "OrderExecution"}),
-    std::pair(7, MessageId{MessageType::OrderBookSnapshot, "OrderBookSnapshot"}),
-    std::pair(8, MessageId{MessageType::SecurityDefinition, "SecurityDefinition"}),
-    std::pair(9, MessageId{MessageType::SecurityStatus, "SecurityStatus"}),
-    std::pair(10, MessageId{MessageType::SecurityDefinitionUpdateReport, "SecurityDefinitionUpdateReport"}),
-    std::pair(11, MessageId{MessageType::TradingSessionStatus, "TradingSessionStatus"}),
-    std::pair(1000, MessageId{MessageType::Logon, "Logon"}),
-    std::pair(1001, MessageId{MessageType::Logout, "Logout"}),
-    std::pair(1002, MessageId{MessageType::MarketDataRequest, "MarketDataRequest"}),
-};
+const char* get_message_type(u16 type) {
+    switch (type) {
+        case 1: return "Hearthbeat";
+        case 2: return "SequenceReset";
+        case 3: return "BestPrices";
+        case 4: return "EmptyBook";
+        case 5: return "OrderUpdate";
+        case 6: return "OrderExecution";
+        case 7: return "OrderBookSnapshot";
+        case 8: return "SecurityDefinition";
+        case 9: return "SecurityStatus";
+        case 10: return "SecurityDefinitionUpdateReport";
+        case 11: return "TradingSessionStatus";
+        case 1000: return "Logon";
+        case 1001: return "Logout";
+        case 1002: return "MarketDataRequest";
+        default: throw BadMessageTypeException();
+    }
+}
 
 class SBEHeader {
     template <typename OutPipe>
@@ -79,8 +77,8 @@ public:
     u64 parse(BufferedReader& parser) {
         header.parse(parser);
         size += SBEHeader::size_bytes;
-        if (message_id.contains(header.get_template_id())) {
-            switch (message_id.at(header.get_template_id()).template_id) {
+        if (get_message_type(header.get_template_id())) {
+            switch (header.get_template_id()) {
                 case MessageType::OrderUpdate: {
                     order_update = OrderUpdate();
                     order_update->parse(parser);
@@ -132,7 +130,7 @@ OutPipe& operator<<(OutPipe& os, const SBEHeader& header) {
     os << "== SBEHeader ==\n";
     os << std::dec;
     os << "Длина блока: "       << static_cast<u32>(header.block_length) << '\n';
-    os << "Template ID: "       << message_type.at(header.template_ID) << '\n';
+    os << "Template ID: "       << header.template_ID << " (" << get_message_type(header.template_ID) << ")\n";
     os << "Schema ID: "         << static_cast<u16>(header.schema_ID) << '\n';
     os << "Version: "           << static_cast<u64>(header.version) << '\n';
     os << "== SBEHeader end ==\n";

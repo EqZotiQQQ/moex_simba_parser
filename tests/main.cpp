@@ -47,9 +47,9 @@ TEST(ParseSample, Parse_100000) {
 
 TEST(BufferedReaderTest, parse_endian) {
     const std::string in = "../../sample.pcap";
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     auto little_endian_marker = 0xD4C3B2A1;
-    u32 endian = reader.next<u32>(Endian::big_endian);
+    u32 endian = reader.next<u32>(std::endian::big);
     std::cout << endian << '\n';
     ASSERT_EQ(little_endian_marker, endian);
     u16 major = reader.next<u16>();
@@ -75,7 +75,7 @@ TEST(BufferedReaderTest, parse_endian) {
 TEST(BufferedReaderTest, parse_u64) {
     const std::string in = "../../tests/00_to_ff.bin";
     std::ifstream f;
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
 
     std::cout << "Parsed u64: " << reader.next<u64>() << std::endl;
     std::cout << reader << '\n';
@@ -97,7 +97,7 @@ TEST(BufferedReaderTest, parse_u64) {
 TEST(BufferedReaderTest, parse_u32) {
     const std::string in = "../../tests/00_to_ff.bin";
     std::ifstream f;
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
     std::cout << reader << '\n';
     std::cout << "Parsed u32: " << reader.next<u32>() << std::endl;
@@ -116,7 +116,7 @@ TEST(BufferedReaderTest, parse_u32) {
 TEST(BufferedReaderTest, parse_u16) {
     const std::string in = "../../tests/00_to_ff.bin";
     std::ifstream f;
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
 
     std::cout << "Parsed u16: " << reader.next<u16>() << std::endl;
     std::cout << reader << '\n';
@@ -137,7 +137,7 @@ TEST(BufferedReaderTest, parse_u16) {
 TEST(BufferedReaderTest, parse_u8) {
     const std::string in = "../../tests/00_to_ff.bin";
     std::ifstream f;
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
 
     std::cout << "Parsed u8: " << static_cast<u16>(reader.next<u8>()) << std::endl;
     std::cout << reader << '\n';
@@ -164,14 +164,14 @@ TEST(BufferedReaderTest, parse_u8) {
 
 TEST(ParseSample, Parse_1024_bytes) {
     const std::string in = "../../sample.pcap";
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     reader.next<i32>();
     std::cout << reader << '\n';
 }
 
 TEST(ParseSample, Parse_00_to_ff) {
     const std::string in = "../../tests/00_to_ff.bin";
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     reader.next<i64>();
     std::cout << reader << '\n';
     reader.next<i64>();
@@ -190,7 +190,7 @@ TEST(ParseSample, Parse_00_to_ff) {
 
 TEST(ParseSample, skip_10) {
     const std::string in = "../../tests/00_to_ff.bin";
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     reader.next<u32>();
     std::cout << reader << '\n';
     reader.skip(10);
@@ -201,7 +201,7 @@ TEST(ParseSample, skip_10) {
 
 TEST(ParseSample, skip_1) {
     const std::string in = "../../tests/00_to_ff.bin";
-    BufferedReader reader {in, Endian::little_endian};
+    BufferedReader reader {in, std::endian::little};
     reader.next<u32>();
     std::cout << reader << '\n';
     reader.skip(20);

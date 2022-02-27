@@ -1,15 +1,15 @@
 #pragma once
 
+#include <fstream>
+#include <array>
+#include <vector>
+
 #include "exceptions.h"
 #include "global_pcap_parser.h"
 #include "utils/buffered_reader.h"
 #include "udp_parser.h"
 #include "types/constants.h"
 #include "market_data_packet_parser.h"
-
-#include <fstream>
-#include <array>
-#include <vector>
 
 
 class PcapParser {
@@ -23,7 +23,7 @@ public:
             out(out_path),
             pcap_packet(bound),
             out_format(OutputFromat::file),
-            parser(in_path, Endian::big_endian) {
+            parser(in_path, std::endian::big) {
         if (!out->is_open()) {
             throw FileNotFoundException();
         }
@@ -33,7 +33,7 @@ public:
             out({}),
             pcap_packet(bound),
             out_format(out_format),
-            parser(in_path, Endian::big_endian) {
+            parser(in_path, std::endian::big) {
     }
 
     void parse() {

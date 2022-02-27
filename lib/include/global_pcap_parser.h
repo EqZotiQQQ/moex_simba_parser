@@ -6,13 +6,22 @@
 #include <iomanip>
 #include <unordered_map>
 
+#include "udp_parser.h"
+#include "pcap_packet_parser.h"
 #include "types/enumerations.h"
 #include "types/typenames.h"
 #include "types/constants.h"
 #include "utils/buffered_reader.h"
-#include "udp_parser.h"
-#include "pcap_packet_parser.h"
 
+const char* get_message_type(u32 type) {
+    switch (type) {
+        case Constants::big_endian_milliseconds: return "Big endian";
+        case Constants::little_endian_milliseconds: return "Little endian";
+        case Constants::big_endian_nanoseconds: return "Big endian";
+        case Constants::little_endian_nanoseconds: return "Little endian";
+        default: throw InvalidMagicNumberException();
+    }
+}
 
 class GlobalPcapHeader {
     template <typename OutPipe>
@@ -43,12 +52,12 @@ public:
         return size;
     };
 
-    Endian validate_endians() {
+    std::endian validate_endians() {
         switch (magic_number) {
             case Constants::little_endian_milliseconds:
-            case Constants::little_endian_nanoseconds: return Endian::little_endian;
+            case Constants::little_endian_nanoseconds: return std::endian::little;
             case Constants::big_endian_milliseconds:
-            case Constants::big_endian_nanoseconds: return Endian::big_endian;
+            case Constants::big_endian_nanoseconds: return std::endian::big;
             default: throw InvalidMagicNumberException();
         }
     }
@@ -123,7 +132,7 @@ OutPipe& operator<<(OutPipe& os, const GlobalPcapHeader& ip_header) {
     os << std::setw(2) << std::right << std::hex;
     os << "Magic number: " << ((ip_header.magic_number >> 24)&0xFF) << ' ' << ((ip_header.magic_number >> 16)&0xFF) << ' ' << ((ip_header.magic_number >> 8)&0xFF) << ' ' << ((ip_header.magic_number)&0xFF) << '\n';
     os << std::dec;
-    os << "Endian: " << endian_type[ip_header.magic_number] << '\n';
+    os << "Endian: " << get_message_type(ip_header.magic_number) << '\n';
     os << "Version Major: " << ip_header.version_major << '\n';
     os << "Version Minor: " << ip_header.version_minor << '\n';
     os << "Time zone: " << ip_header.time_zone << '\n';

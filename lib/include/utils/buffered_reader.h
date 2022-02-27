@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include <cstring>
+#include <bit>
 
 #include "types/typenames.h"
 #include "exceptions.h"
@@ -19,31 +20,19 @@ private:
     std::array<u8, buffer_size> buffer {0};
     bool is_init = false;
     std::ifstream file;
-    Endian endian;
+    std::endian endian;
 private:
-    u64 parse_by_byte() {
-        u64 left = parsed_bytes - buffer_pos;
-        for (int i = 0; i < left; i++) {
-            buffer[i] = buffer[buffer_size - left + i];
-        }
-        for (u64 i = left; i < buffer_size; i++) {
-            buffer[i] = file.get();
-        }
-        parsed_bytes = buffer_size;
-        return buffer_size;
-    }
-
     u64 parse_using_read() {
         u64 left = parsed_bytes - buffer_pos;
         for (int i = 0; i < left; i++) {
             buffer[i] = buffer[buffer_size - left + i];
         }
-        file.read((char*) &buffer[left], buffer_size - left);  // it .get() reads N-1 bytes from file and place to the end '/0'; get reads untill '/n' symbol, lol
+        file.read((char*) &buffer[left], buffer_size - left);
         parsed_bytes = file.gcount() + left;
         return parsed_bytes;
     }
 public:
-    BufferedReader(const std::string& in, Endian endian):
+    BufferedReader(const std::string& in, std::endian endian):
         file(in, std::ios::in | std::ios::out | std::ios::binary),
         endian(endian) {
 
@@ -54,24 +43,23 @@ public:
 
     BufferedReader() = default;
 
-    void set_endian(Endian endian) {
+    void set_endian(std::endian endian) {
         this->endian = endian;
     }
 
     u64 default_parse_method() {
-//        return parse_by_byte();
         return parse_using_read();
     }
 
     template<typename T>
-    T next(Endian provided_endian) {
+    T next(std::endian provided_endian) {
         u8 t_size = sizeof(T);
         if (t_size > parsed_bytes - buffer_pos) {
             default_parse_method();
             buffer_pos = 0;
         }
         T value {};
-        if (provided_endian == Endian::big_endian) {
+        if (provided_endian == std::endian::big) {
             std::reverse(buffer.begin() + buffer_pos, buffer.begin() + buffer_pos + t_size);
         }
         for (int i = 0; i < t_size; i++) {
@@ -83,7 +71,7 @@ public:
         return value;
     }
 
-    void skip(i64 n) {
+    void skip(u64 n) {
         if (n == 0) return;
         if (buffer_size > buffer_pos + n) {
             buffer_pos += n;
@@ -120,7 +108,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const BufferedReader& reader) {
-    os << '[';
+    os << "Buffer: [";
     for (int i = 0; i < reader.buffer.size() - 1; i++) {
         os << static_cast<u32>(reader.buffer[i]) << ' ';
     }

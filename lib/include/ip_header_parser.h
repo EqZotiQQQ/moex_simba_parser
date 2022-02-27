@@ -1,12 +1,47 @@
 #pragma once
 
+#include "types/typenames.h"
+#include "types/constants.h"
+#include "utils/buffered_reader.h"
+
 #include <array>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include "types/typenames.h"
-#include "types/constants.h"
-#include "utils/buffered_reader.h"
+
+class IpHeader {
+    template <typename OutPipe>
+    friend OutPipe& operator<<(OutPipe& os, const IpHeader& header);
+private:
+    std::array<u8, 6> destination_mac {};
+    std::array<u8, 6> source_mac {};
+    u16 protocol_version {};
+
+    u8 strange_field {};
+    u8 differentiated_services_field {};
+    u16 total_length {};
+    u16 identification {};
+    u16 flags_and_fragment_offset {};
+    u8 ttl {};
+    u8 udp_protocol {};
+
+public:
+    constexpr static u16 size = {14};
+public:
+    IpHeader() {}
+    void parse(BufferedReader& parser) {
+        destination_mac = parser.next_mac();
+        source_mac = parser.next_mac();
+        protocol_version = parser.next<u16>(std::endian::big);
+        strange_field = parser.next<u8>();
+        differentiated_services_field = parser.next<u8>();
+        total_length = parser.next<u16>(std::endian::big);
+        identification = parser.next<u16>(std::endian::big);
+        flags_and_fragment_offset = parser.next<u16>(std::endian::big);
+        ttl = parser.next<u8>();
+        udp_protocol = parser.next<u8>();
+    }
+};
 
 static const char* get_type(u16 type) {
     switch (type) {
@@ -18,7 +53,7 @@ static const char* get_type(u16 type) {
 }
 
 static const u8 get_version(u8 type) {
-    if (0x04) {
+    if ((type & 0x04) == 0x04) {
         return 4;
     } else {
         throw UnsupportedVersionException();
@@ -26,7 +61,7 @@ static const u8 get_version(u8 type) {
 }
 
 static const u8 get_header_length(u8 type) {
-    if (0x05) {
+    if ((type & 0x05) == 0x05) {
         return 20;
     } else {
         throw BadHeaderLengthException();
@@ -34,7 +69,7 @@ static const u8 get_header_length(u8 type) {
 }
 
 static const char* get_diff_serv(u8 type) {
-    if (type == 0x0000) {
+    if ((type & 0x0000) == 0x0000) {
         return "CS0";
     } else {
         throw BadHeaderLengthException();
@@ -76,40 +111,6 @@ static const char* more_fragments(u16 type) {
 static const int get_length(u16 type) {
     return type & 0x023C;
 }
-
-class IpHeader {
-    template <typename OutPipe>
-    friend OutPipe& operator<<(OutPipe& os, const IpHeader& header);
-private:
-    std::array<u8, 6> destination_mac {};
-    std::array<u8, 6> source_mac {};
-    u16 protocol_version {};
-
-    u8 strange_field {};
-    u8 differentiated_services_field {};
-    u16 total_length {};
-    u16 identification {};
-    u16 flags_and_fragment_offset {};
-    u8 ttl {};
-    u8 udp_protocol {};
-
-public:
-    constexpr static u16 size = {14};
-public:
-    IpHeader() {}
-    void parse(BufferedReader& parser) {
-        destination_mac = parser.next_mac();
-        source_mac = parser.next_mac();
-        protocol_version = parser.next<u16>(Endian::big_endian);
-        strange_field = parser.next<u8>();
-        differentiated_services_field = parser.next<u8>();
-        total_length = parser.next<u16>(Endian::big_endian);
-        identification = parser.next<u16>(Endian::big_endian);
-        flags_and_fragment_offset = parser.next<u16>(Endian::big_endian);
-        ttl = parser.next<u8>();
-        udp_protocol = parser.next<u8>();
-    }
-};
 
 template <typename OutPipe>
 OutPipe& operator<<(OutPipe& os, const IpHeader& header) {

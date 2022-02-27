@@ -24,10 +24,10 @@ public:
     constexpr static u8 pos_dup_flag {0x10};
 
     void parse(BufferedReader& parser) {
-        msg_seq_number = parser.next<u32>(Endian::little_endian);
-        msg_size = parser.next<u16>(Endian::little_endian);
-        msg_flags = parser.next<u16>(Endian::little_endian);
-        sending_time = parser.next<u64>(Endian::little_endian);
+        msg_seq_number = parser.next<u32>(std::endian::little);
+        msg_size = parser.next<u16>(std::endian::little);
+        msg_flags = parser.next<u16>(std::endian::little);
+        sending_time = parser.next<u64>(std::endian::little);
     }
 
     bool is_incremental() const noexcept {

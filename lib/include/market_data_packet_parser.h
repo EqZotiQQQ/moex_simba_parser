@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <optional>
+
 #include "types/typenames.h"
 #include "utils/buffered_reader.h"
 #include "packets/market_data_packet.h"

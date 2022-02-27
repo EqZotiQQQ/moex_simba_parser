@@ -2,6 +2,7 @@
 
 #include <ostream>
 #include <optional>
+
 #include "types/typenames.h"
 #include "packets/market_data_packet.h"
 #include "packets/incremental_packet.h"
@@ -28,13 +29,13 @@ public:
 public:
 
     void parse(BufferedReader& parser) {
-        check_sum = parser.next<u16>(Endian::big_endian);
+        check_sum = parser.next<u16>(std::endian::big);
         source_ip = parser.next_ip();
         dest_ip = parser.next_ip();
-        source_port = parser.next<u16>(Endian::big_endian);
-        destination_port = parser.next<u16>(Endian::big_endian);
-        length = parser.next<u16>(Endian::big_endian);
-        check_sum_udp = parser.next<u16>(Endian::big_endian);
+        source_port = parser.next<u16>(std::endian::big);
+        destination_port = parser.next<u16>(std::endian::big);
+        length = parser.next<u16>(std::endian::big);
+        check_sum_udp = parser.next<u16>(std::endian::big);
     }
 };
 

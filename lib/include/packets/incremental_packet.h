@@ -16,8 +16,8 @@ public:
 
     IncrementalPacketHeader() {}
     void parse(BufferedReader& parser) {
-        transact_time = parser.next<u64>(Endian::little_endian);
-        exchange_trading_session_ID = parser.next<u32>(Endian::little_endian);
+        transact_time = parser.next<u64>(std::endian::little);
+        exchange_trading_session_ID = parser.next<u32>(std::endian::little);
     }
 };
 
