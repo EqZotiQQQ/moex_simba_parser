@@ -73,10 +73,14 @@ private:
 
     PcapPacket pcap_parser;
 
+    OutputFromat out_format;
+
+    std::optional<std::ofstream>& out;
+
     u32 bound {};
 
     template <typename T>
-    void out(OutputFromat out_format, T data, std::optional<std::ofstream>& out) {
+    void of(T data) {
         switch (out_format) {
             case OutputFromat::file: {
                 out.value() << data;
@@ -93,19 +97,22 @@ private:
     }
 
 public:
-    GlobalPcapPacket(u32 bound): bound(bound) {}
+    GlobalPcapPacket(OutputFromat out_format, u32 bound, std::optional<std::ofstream>& of):
+            out_format(out_format),
+            bound(bound),
+            out(of) {}
 
-    void parse(BufferedReader& parser, std::optional<std::ofstream>& out, OutputFromat out_format) {
+    void parse(BufferedReader& parser) {
 
         global_pcap_header.parse(parser);
 
         u32 parsed_packets {};
 
-        this->out(out_format, global_pcap_header, out);
+        this->of(global_pcap_header);
 
         while (parsed_packets++ < bound) {
             pcap_parser.parse(parser);
-            this->out(out_format, pcap_parser, out);
+            this->of(pcap_parser);
         }
     }
 };

@@ -10,6 +10,7 @@
 
 #include "types/typenames.h"
 #include "exceptions.h"
+#include "global_pcap_parser.h"
 
 
 class BufferedReader {
