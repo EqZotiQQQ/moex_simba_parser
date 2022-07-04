@@ -1,0 +1,1 @@
+add_subdirectory(moex_simba_parser)

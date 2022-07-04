@@ -1,21 +1,10 @@
-cmake_minimum_required(VERSION 3.21)
-project(moex_simba_parser)
+cmake_minimum_required(VERSION 3.16)
 
-project(lib)
+project(moex_simba_parser VERSION 0.0.1 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 20)
+include(CTest)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)   # include additional tools
+add_subdirectory(libs)
+add_subdirectory(app)
 
-include_directories(tests)
-include_directories(benchmark)
-
-add_subdirectory(lib)
-
-add_subdirectory(tests)
-add_subdirectory(benchmark)
-
-add_subdirectory(third_party/googletest)
-add_subdirectory(third_party/benchmark)
-
-add_compile_options(-Wall -Wextra -pedantic -Werror)
+add_subdirectory(3rd_party/binary_parser)
