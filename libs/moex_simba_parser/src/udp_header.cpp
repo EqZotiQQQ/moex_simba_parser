@@ -26,8 +26,8 @@ std::string UdpHeader::to_string() const noexcept {
             "Check sum: {}\n"
             "Source IP: {}:{}\n"
             "Destination IP: {}:{}\n"
-            "Length: {}\n"
-            "Check sum UDP: {}\n",
+            "Length: {} bytes\n"
+            "Check sum UDP: {}",
             check_sum,
             source_ip.to_string(),
             source_port,
@@ -39,6 +39,8 @@ std::string UdpHeader::to_string() const noexcept {
 }
 
 std::ostream& operator<<(std::ostream& os, const UdpHeader& header) {
+    os << "\n<UDP Header>\n";
     os << header.to_string();
+    os << "\n</UDP Header>\n";
     return os;
 }

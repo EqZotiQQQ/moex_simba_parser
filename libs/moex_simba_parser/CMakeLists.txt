@@ -9,13 +9,13 @@ add_library(${PROJECT_NAME}
         src/market_data_packet.cpp
         src/incremental_packet.cpp
         src/snapshot_packet.cpp
-        src/best_prices.cpp
-        src/execution.cpp
+        src/best_prices_order.cpp
+        src/order_execution.cpp
         src/order_book_snapshot.cpp
-        src/update.cpp
+        src/order_update.cpp
         src/sbe_message.cpp
         src/magic_number.cpp
-        src/protocol_version.cpp include/moex/sbe/sbe_header.h)
+        src/protocol_version.cpp)
 
 add_library(libs::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
@@ -37,9 +37,15 @@ add_compile_options(
         -Werror
         -Wno-missing-braces )
 
+
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         lib::binary_parser
+        )
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        fmt
         )
 
 if(BUILD_TESTING)

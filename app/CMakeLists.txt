@@ -6,7 +6,17 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
+        lib::binary_parser
+        )
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
         libs::moex_simba_parser
+        )
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        fmt
         )
 
 target_compile_features(${PROJECT_NAME}

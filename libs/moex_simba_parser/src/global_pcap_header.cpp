@@ -1,12 +1,11 @@
 #include "global_pcap_header.h"
 
-GlobalPcapHeader::GlobalPcapHeader(BufferedReader& reader) {
+GlobalPcapHeader::GlobalPcapHeader(BufferedReader& reader):
+        magic_number{reader.next<uint32_t>(std::endian::big)} {
     parse(reader);
 }
 
 void GlobalPcapHeader::parse(BufferedReader& reader) {
-    magic_number.value = reader.next<uint32_t>(std::endian::big);
-
     reader.set_endian(magic_number.identify_endian());
 
     version_major = reader.next<uint16_t>();

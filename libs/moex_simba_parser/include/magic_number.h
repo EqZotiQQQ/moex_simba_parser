@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
-#include <bit>
 
 struct MagicNumber {
     uint32_t value;
@@ -14,6 +12,8 @@ struct MagicNumber {
     std::string to_string() const;
 
     std::endian identify_endian() const;
+    bool is_ns() const;
+
 
     friend std::ostream& operator<<(std::ostream& os, const MagicNumber& header);
 };

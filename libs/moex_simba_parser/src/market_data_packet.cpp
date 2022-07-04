@@ -20,6 +20,15 @@ MarketDataPacket::MarketDataPacket(BufferedReader &reader, uint32_t packet_lengt
     } else {
         packet = SnapshotPacket{reader, packet_length};
     }
+    packet_length -= std::visit([]<typename T>(T&& t) -> size_t {
+        if constexpr(
+                std::is_same_v<std::decay_t<T>, IncrementalPacket> ||
+                std::is_same_v<std::decay_t<T>, SnapshotPacket>) {
+            return t.get_parsed_bytes();
+        } else {
+            throw std::runtime_error("Bad market data packet type\n");
+        }
+        }, packet);
     reader.skip(packet_length);
 }
 
@@ -28,17 +37,16 @@ void MarketDataPacket::parse(MarketDataPacket& reader) {
 }
 
 std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet) {
+    os << "\n<Market Data Packet>\n";
     os << packet.header << '\n';
-    std::visit([&os](auto&& arg) {
-        using T = std::decay_t<decltype(arg)>;
-        if constexpr(std::is_same_v<T, IncrementalPacket>) {
-            os << "Incremental packet\n";
-            os << arg;
-        } else if constexpr(std::is_same_v<T, SnapshotPacket>) {
-            os << "Snapshot packet\n";
+    std::visit([&os]<typename T>(T&& arg) {
+        if constexpr(
+                std::is_same_v<std::decay_t<T>, IncrementalPacket> ||
+                std::is_same_v<std::decay_t<T>, SnapshotPacket>) {
             os << arg;
         }
     }, packet.packet);
+    os << "\n</Market Data Packet>\n";
     return os;
 }
 

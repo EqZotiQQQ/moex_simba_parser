@@ -24,8 +24,8 @@ void IpHeader::parse(BufferedReader& reader) {
     udp_protocol = Protocol{reader.next<uint8_t>()};
 }
 
-std::ostream& operator<<(std::ostream& os, const IpHeader& header) {
-    os << fmt::format(
+std::string IpHeader::to_string() const {
+    return fmt::format(
             "Destination MAC: {}\n"
             "Source MAC: {}\n"
             "Protocol Version: {}\n"
@@ -35,17 +35,23 @@ std::ostream& operator<<(std::ostream& os, const IpHeader& header) {
             "Identification: {}\n"
             "Flags and fragment offset: {}\n"
             "TTL: {}\n"
-            "UDP protocol: {}\n",
-            header.destination_mac.to_string(),
-            header.source_mac.to_string(),
-            header.protocol_version.to_string(),
-            header.strange_field,
-            header.differentiated_services_field,
-            header.total_length,
-            header.identification,
-            header.flags_and_fragment_offset.to_string(),
-            header.ttl,
-            header.udp_protocol.to_string()
+            "UDP protocol: {}",
+            destination_mac.to_string(),
+            source_mac.to_string(),
+            protocol_version.to_string(),
+            strange_field,
+            differentiated_services_field,
+            total_length,
+            identification,
+            flags_and_fragment_offset.to_string(),
+            ttl,
+            udp_protocol.to_string()
     );
+}
+
+std::ostream& operator<<(std::ostream& os, const IpHeader& header) {
+    os << "\n<IP Header>\n";
+    os << header.to_string();
+    os << "\n</IP Header>\n";
     return os;
 }

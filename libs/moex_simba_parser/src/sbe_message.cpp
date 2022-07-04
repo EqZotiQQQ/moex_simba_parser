@@ -1,5 +1,5 @@
-#include <c++/11/iostream>
 #include "moex/sbe/sbe_message.h"
+#include <fmt/format.h>
 
 SbeMessageHeader::SbeMessageHeader(BufferedReader& reader) {
     block_length = reader.next<uint16_t>();
@@ -13,16 +13,18 @@ void SbeMessageHeader::parse(BufferedReader& reader) {
 }
 
 std::ostream &operator<<(std::ostream& os, const SbeMessageHeader& header) {
+    os << "<SBE message header>\n";
     os << fmt::format("\n{}\n", header.to_string());
+    os << "</SBE message header>\n";
     return os;
 }
 
 std::string SbeMessageHeader::to_string() const noexcept {
     return fmt::format(
-            "block_length: {}\n"
-            "template_ID: {}\n"
-            "schema_ID: {}\n"
-            "version: {}\n",
+            "Block length: {}\n"
+            "Template ID: {}\n"
+            "Schema ID: {}\n"
+            "Version: {}\n",
             block_length,
             template_ID.to_string(),
             schema_ID,
@@ -39,10 +41,10 @@ SbeMessage::SbeMessage(BufferedReader& reader):
     parsed += SbeMessageHeader::SIZE;
 
     switch (header.template_ID.value) {
-        case MessageTypeValue::OrderBestPrices: { order = BestPriceisOrder{reader}; break;}
-        case MessageTypeValue::OrderUpdate: { order = Update{reader} ; break;}
+        case MessageTypeValue::OrderBestPrices: { order = BestPricesOrder{reader}; break;}
+        case MessageTypeValue::OrderUpdate: { order = OrderUpdate{reader} ; break;}
         case MessageTypeValue::OrderExecution: { order = OrderExecution{reader}; break;}
-        case MessageTypeValue::OrderBookSnapshotPacket: { order = OrderBookSnapshot{reader}; break;}
+        case MessageTypeValue::OrderBookSnapshotPacket: { order = OrderBookSnapshotPacket{reader}; break;}
         case MessageTypeValue::Heartbeat:
         case MessageTypeValue::SequenceReset:
         case MessageTypeValue::EmptyBook:
@@ -73,7 +75,8 @@ void SbeMessage::parse(BufferedReader &reader) {
 
 std::string SbeMessage::to_string() const {
     std::string res;
-    res = std::visit([]<typename T>(T&& o) -> std::string {
+    res += header.to_string() + '\n';
+    res += std::visit([]<typename T>(T&& o) -> std::string {
         if constexpr (!std::is_same_v<std::monostate, std::decay_t<T>>) {
             return o.to_string();
         } else {
@@ -83,7 +86,7 @@ std::string SbeMessage::to_string() const {
     return res;
 }
 
-std::ostream &operator<<(std::ostream& os, const SbeMessage& header) {
-    os << header.to_string();
+std::ostream &operator<<(std::ostream& os, const SbeMessage& message) {
+    os << message.to_string();
     return os;
 }

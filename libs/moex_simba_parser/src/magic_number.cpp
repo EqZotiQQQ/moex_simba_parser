@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <bit>
 #include "magic_number.h"
 
 MagicNumber::MagicNumber(): value(0) {}
@@ -49,6 +50,18 @@ std::endian MagicNumber::identify_endian() const {
         }
     }
     return endian;
+}
+
+bool MagicNumber::is_ns() const {
+    switch(value) {
+        case 0xD4C3B2A1:
+        case 0xA1B2C3D4: return true;
+        case 0xA1B23C4D:
+        case 0x4D3CB2A1: return false;
+        default: {
+            throw std::runtime_error("Bad magic number");
+        }
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const MagicNumber& header) {

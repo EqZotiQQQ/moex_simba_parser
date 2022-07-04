@@ -1,14 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <variant>
 #include <iostream>
 #include <binary_parser/buffered_reader.h>
 
-#include "moex/orders/best_prices.h"
-#include "moex/orders/execution.h"
+#include "moex/orders/best_prices_order.h"
+#include "moex/orders/order_execution.h"
 #include "moex/orders/order_book_snapshot.h"
-#include "moex/orders/update.h"
+#include "moex/orders/order_update.h"
 
 enum class MessageTypeValue {
     Heartbeat = 1,
@@ -33,7 +32,6 @@ struct TemplateId {
     TemplateId() {}
 
     explicit TemplateId(uint32_t type) {
-        std::cout << type << '\n';
         switch(type) {
             case 1: { value = MessageTypeValue::Heartbeat; break;}
             case 2: { value = MessageTypeValue::SequenceReset; break;}
@@ -99,10 +97,9 @@ struct SbeMessageHeader {
     friend std::ostream& operator<<(std::ostream& os, const SbeMessageHeader& header);
 };
 
-
 struct SbeMessage {
     constexpr static std::size_t SIZE = 8;
-    using OrderType = std::variant<std::monostate, Update, OrderExecution, OrderBookSnapshot, BestPriceisOrder>;
+    using OrderType = std::variant<std::monostate, OrderUpdate, OrderExecution, OrderBookSnapshotPacket, BestPricesOrder>;
 
     SbeMessageHeader header {};
     OrderType order;
@@ -113,6 +110,7 @@ struct SbeMessage {
     void parse(BufferedReader& reader);
 
     std::string to_string() const;
+    size_t get_parsed_bytes() const { return parsed; }
 
     friend std::ostream& operator<<(std::ostream& os, const SbeMessage& header);
 };

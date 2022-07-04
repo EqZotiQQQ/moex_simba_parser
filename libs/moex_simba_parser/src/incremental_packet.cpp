@@ -16,7 +16,7 @@ std::ostream &operator<<(std::ostream &os, const IncrementalPacketHeader &packet
 
 std::string IncrementalPacketHeader::to_string() const {
     return fmt::format(
-            "Transaction time: {}\n"
+            "Transaction time: TODO: {}\n"
             "Exchange trading session ID: {}\n",
             transaction_time,
             exchange_trading_session_id
@@ -25,12 +25,10 @@ std::string IncrementalPacketHeader::to_string() const {
 
 IncrementalPacket::IncrementalPacket(BufferedReader &reader, uint32_t packet_length):
         header{IncrementalPacketHeader{reader}} {
-    size_t parsed = 0;
-    parsed += 12;
+    parsed += IncrementalPacketHeader::SIZE;
 
     while (packet_length > parsed) {
-        sbe_messages.emplace_back(reader);
-        parsed += sbe_messages.back().parsed;
+        parsed += sbe_messages.emplace_back(reader).parsed;
     }
 
 }

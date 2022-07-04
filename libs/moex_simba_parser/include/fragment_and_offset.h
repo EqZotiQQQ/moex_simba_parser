@@ -4,13 +4,20 @@
 #include <string>
 
 enum class Bit {
-    SET,
-    UNSET,
+    UNSET = 0,
+    SET = 1,
+};
+
+enum class IdentityBits {
+    IDENTITY_RESERVE_BIT = 1,
+    IDENTITY_DONT_FRAGMENT_BIT = 2,
+    IDENTITY_MORE_FRAGMENTS_BIT = 3,
 };
 
 struct FragmentAndOffset {
 
     uint16_t value {};
+
 
     FragmentAndOffset(): value(0) {}
 
@@ -18,17 +25,17 @@ struct FragmentAndOffset {
 
     std::string to_string() const {
         std::string out = "\n";
-        if (identify_reserve_bit() == Bit::SET) {
+        if (is_bit_set(IdentityBits::IDENTITY_RESERVE_BIT) == Bit::SET) {
             out += "* Reserve bit set\n";
         } else {
             out += "* Reserve bit unset\n";
         }
-        if (identify_dont_fragment_bit() == Bit::SET) {
+        if (is_bit_set(IdentityBits::IDENTITY_DONT_FRAGMENT_BIT) == Bit::SET) {
             out += "* Don't fragment bit set\n";
         } else {
             out += "* Don't fragment bit unset\n";
         }
-        if (identify_more_fragments_bit() == Bit::SET) {
+        if (is_bit_set(IdentityBits::IDENTITY_MORE_FRAGMENTS_BIT) == Bit::SET) {
             out += "* More fragments bit set\n";
         } else {
             out += "* More fragments bit unset\n";
@@ -37,16 +44,8 @@ struct FragmentAndOffset {
         return out;
     }
 
-    Bit identify_reserve_bit() const {
-        return ((value >> 1) & 1) == 1 ? Bit::SET : Bit::UNSET;
-    }
-
-    Bit identify_dont_fragment_bit() const {
-        return ((value >> 2) & 1) == 1 ? Bit::SET : Bit::UNSET;
-    }
-
-    Bit identify_more_fragments_bit() const {
-        return ((value >> 3) & 1) == 1 ? Bit::SET : Bit::UNSET;
+    Bit is_bit_set(IdentityBits bit) const {
+        return ((value >> static_cast<uint8_t>(bit)) & 1) == 1 ? Bit::SET : Bit::UNSET;
     }
 
     uint16_t get_length_bit() const {
@@ -58,4 +57,3 @@ struct FragmentAndOffset {
         return os;
     }
 };
-

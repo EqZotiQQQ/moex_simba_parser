@@ -1,8 +1,6 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
-#include <stdexcept>
 
 enum class ProtocolValue {
     UDP = 17,

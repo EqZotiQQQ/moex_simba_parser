@@ -51,4 +51,5 @@ add_compile_options(
         -Wextra
         -Werror
         -Wno-missing-braces )
+
 add_test(lib1_tests ${PROJECT_NAME})
