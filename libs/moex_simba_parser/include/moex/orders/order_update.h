@@ -95,7 +95,6 @@ struct OrderUpdate {
 
     static constexpr size_t SIZE = 42;
     explicit OrderUpdate(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     static constexpr size_t get_parsed_bytes() { return SIZE; }
 
@@ -104,7 +103,7 @@ struct OrderUpdate {
                 "Order ID: {}\n"
                 "Order price: {}\n"
                 "Order volume: {}\n"
-                "Order type (bit mask): {}\n"
+                "Order type (bit mask): \n{}\n"
                 "Instrument numeric code: {}\n"
                 "Incremental refresh sequence number: {}\n"
                 "Incremental refresh type: {}\n"

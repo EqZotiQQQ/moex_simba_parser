@@ -8,8 +8,6 @@ BestPriceisOrderPayload::BestPriceisOrderPayload(BufferedReader& reader):
     security_id{reader.next<int32_t>()}
 {}
 
-void BestPriceisOrderPayload::parse(BufferedReader& reader) {}
-
 std::ostream& operator<<(std::ostream& os, const BestPriceisOrderPayload& best_price_payload) {
     os << best_price_payload.to_string();
     return os;

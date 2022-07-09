@@ -8,10 +8,6 @@ SbeMessageHeader::SbeMessageHeader(BufferedReader& reader) {
     version = reader.next<uint16_t>();
 }
 
-void SbeMessageHeader::parse(BufferedReader& reader) {
-
-}
-
 std::ostream &operator<<(std::ostream& os, const SbeMessageHeader& header) {
     os << "<SBE message header>\n";
     os << fmt::format("\n{}\n", header.to_string());
@@ -67,10 +63,6 @@ SbeMessage::SbeMessage(BufferedReader& reader):
             return header.block_length;
         }
     }, order);
-}
-
-void SbeMessage::parse(BufferedReader &reader) {
-
 }
 
 std::string SbeMessage::to_string() const {

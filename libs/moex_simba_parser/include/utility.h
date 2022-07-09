@@ -85,8 +85,28 @@ inline int64_t sec_ns_to_ns(uint64_t sec, uint64_t ns) {
 }
 
 //micro -> us 10^-6
-inline auto sec_us_to_ns(uint64_t sec, uint64_t us) {
+inline int64_t sec_us_to_ns(uint64_t sec, uint64_t us) {
     return sec * 1'000'000 + us;
+}
+
+inline int64_t ns_to_sec(uint64_t ns) {
+    return ns / 1'000'000'000;
+}
+
+inline int64_t floor_ns(uint64_t ns) {
+    return ns % 1'000'000'000;
+}
+
+inline std::string to_human_readable_time_presc(uint32_t secondary_time, Time format) {
+    if (format == Time::MICROSECONDS) {
+        std::string s = std::to_string(1'000'000 + secondary_time);
+        s[0] = '0';
+        return s;
+    } else {
+        std::string s = std::to_string(1'000'000'000 + secondary_time);
+        s[0] = '0';
+        return s;
+    }
 }
 
 inline std::string to_human_readable_time(uint64_t sec) {

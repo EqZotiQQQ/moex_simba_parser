@@ -12,9 +12,6 @@ GlobalPcapHeader::GlobalPcapHeader(BufferedReader& reader, PcapConfig& pcap_conf
     network = LinkType{reader.next<uint32_t>()};
 }
 
-void GlobalPcapHeader::parse(BufferedReader& reader) {
-}
-
 std::string GlobalPcapHeader::to_string() const noexcept {
     return fmt::format(
             "Magic number: {:X}\n"

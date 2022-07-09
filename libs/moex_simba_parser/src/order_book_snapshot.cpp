@@ -11,10 +11,6 @@ OrderBookSnapshot::OrderBookSnapshot(BufferedReader &reader):
     md_entry_type{reader.next<uint8_t>()} {}
 
 
-void OrderBookSnapshot::parse(BufferedReader &reader) {
-
-}
-
 std::ostream &operator<<(std::ostream &os, const OrderBookSnapshot &header) {
     os << header.to_string();
     return os;

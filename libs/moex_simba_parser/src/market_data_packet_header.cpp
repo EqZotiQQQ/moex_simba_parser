@@ -7,9 +7,6 @@ MarketDataPacketHeader::MarketDataPacketHeader(BufferedReader& reader):
         sending_time{reader.next<uint64_t>()}
 {}
 
-void MarketDataPacketHeader::parse(BufferedReader& reader) {
-}
-
 std::ostream& operator<<(std::ostream& os, const MarketDataPacketHeader& header) {
     os << "<Market Data Packet Header>\n";
     os << header.to_string();
@@ -21,11 +18,12 @@ std::string MarketDataPacketHeader::to_string() const {
     return fmt::format(
             "Sequential number: {}\n"
             "Message size: {}\n"
-            "Flags: {} TODO\n"
-            "Sending time: {} TODO",
+            "Flags:\n{} TODO\n"
+            "Sending time: {}.{} TODO",
             msg_seq_number,
             msg_size,
             flags.to_string(),
-            sending_time
+            to_human_readable_time(ns_to_sec(sending_time)),
+            floor_ns(sending_time)
     );
 }

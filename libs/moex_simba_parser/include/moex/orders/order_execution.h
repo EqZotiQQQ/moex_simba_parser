@@ -21,7 +21,6 @@ struct OrderExecution {
     static constexpr size_t SIZE = 66;
 
     explicit OrderExecution(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     static size_t get_parsed_bytes() {return SIZE;}
     std::string to_string() const;

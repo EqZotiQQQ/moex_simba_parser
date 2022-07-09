@@ -52,7 +52,6 @@ struct GlobalPcapHeader {
     LinkType network;
 
     GlobalPcapHeader(BufferedReader& reader, PcapConfig& pcap_config);
-    void parse(BufferedReader& reader);
     std::string to_string() const noexcept;
 
     friend std::ostream& operator<<(std::ostream& os, const GlobalPcapHeader& header);

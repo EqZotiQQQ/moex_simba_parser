@@ -11,6 +11,7 @@
 #include "udp_header.h"
 #include "moex/market_data_packet.h"
 #include "utility.h"
+#include "app_config.h"
 
 const std::string encoded_file_path = "../../../../assets/sample.pcap";
 
@@ -20,11 +21,14 @@ int main(int argc, char** argv) {
 }
 
 TEST(MoexSimbaParserTest, parse_global_pcap_header) {
-    BufferedReader parser{encoded_file_path};
-    GlobalPcapHeader global_pcap_header{parser};
+    Config config{encoded_file_path, 1};
+
+    BufferedReader parser{config.encoded_file_path};
+    PcapConfig pcap_config;
+    GlobalPcapHeader global_pcap_header{parser, pcap_config};
     std::cout << global_pcap_header << '\n';
 
-    for (int i = 0; i < 1; i++) {
+    for (size_t i = 0; i < config.packets_to_parse; i++) {
 
         std::cout << "Packet number " << i+1 << '\n';
         RecordHeader record_header{parser, global_pcap_header.magic_number.is_ns()};

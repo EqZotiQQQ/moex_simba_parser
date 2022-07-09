@@ -12,10 +12,6 @@ OrderUpdate::OrderUpdate(BufferedReader& reader):
 {
 }
 
-void OrderUpdate::parse(BufferedReader& reader) {
-
-}
-
 std::ostream &operator<<(std::ostream& os, const OrderUpdate& order_update) {
     os << order_update.to_string();
     return os;

@@ -14,7 +14,7 @@ add_library(${PROJECT_NAME}
         src/order_book_snapshot.cpp
         src/order_update.cpp
         src/sbe_message.cpp
-        src/protocol_version.cpp include/pcap_config.h)
+        src/protocol_version.cpp include/pcap_config.h include/app_config.h)
 
 add_library(libs::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 

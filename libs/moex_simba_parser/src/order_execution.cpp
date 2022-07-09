@@ -15,10 +15,6 @@ OrderExecution::OrderExecution(BufferedReader& reader):
 
 }
 
-void OrderExecution::parse(BufferedReader& reader) {
-
-}
-
 std::string OrderExecution::to_string() const {
     return fmt::format(
             "Order ID: {}\n"

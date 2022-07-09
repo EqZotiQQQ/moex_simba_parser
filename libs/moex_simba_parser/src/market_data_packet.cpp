@@ -1,18 +1,6 @@
 #include "moex/market_data_packet.h"
 
-/*
-MarketDataPacket::MarketDataPacket(BufferedReader& reader):
-    header{MarketDataPacketHeader{reader}} {
-    if (header.is_incremental()) {
-        packet = IncrementalPacket{reader};
-    } else {
-        packet = SnapshotPacket{reader};
-    }
-    reader.skip(length);
-}
-*/
-
-MarketDataPacket::MarketDataPacket(BufferedReader &reader, uint32_t packet_length):
+MarketDataPacket::MarketDataPacket(BufferedReader &reader, size_t packet_length):
         header{MarketDataPacketHeader{reader}} {
     packet_length -= 16;
     if (header.is_incremental()) {
@@ -32,10 +20,6 @@ MarketDataPacket::MarketDataPacket(BufferedReader &reader, uint32_t packet_lengt
     reader.skip(packet_length);
 }
 
-void MarketDataPacket::parse(MarketDataPacket& reader) {
-
-}
-
 std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet) {
     os << "\n<Market Data Packet>\n";
     os << packet.header << '\n';
@@ -46,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, const MarketDataPacket& packet) {
             os << arg;
         }
     }, packet.packet);
-    os << "\n</Market Data Packet>\n";
+    os << "</Market Data Packet>";
     return os;
 }
 

@@ -63,7 +63,6 @@ struct OrderBookSnapshot {
     static constexpr size_t SIZE = 49;
 
     explicit OrderBookSnapshot(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     static size_t get_parsed_bytes() {return SIZE;}
     std::string to_string() const;

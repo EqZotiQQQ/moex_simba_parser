@@ -12,17 +12,15 @@ RecordHeader::RecordHeader(BufferedReader& reader, const PcapConfig& pcap_config
 {
 }
 
-void RecordHeader::parse(BufferedReader& reader) {
-}
-
 std::string RecordHeader::to_string() const {
     return fmt::format(
-            "Sending time: {}\n"
+            "Sending time: {}.{}\n"
             "Timestamp Seconds: {}\n"
             "Timestamp {}(Microseconds or nanoseconds): {}\n"
             "Captured Packet Length: {}\n"
             "Original Packet Length: {}",
             to_human_readable_time(seconds),
+            to_human_readable_time_presc(secondary_time, time_format),
             seconds,
             time_format == Time::MICROSECONDS ? "Microseconds" : "Nanoseconds",
             secondary_time,

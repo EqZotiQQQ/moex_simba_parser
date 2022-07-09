@@ -13,7 +13,6 @@ struct BestPriceisOrderPayload {
     int32_t security_id {};
 
     explicit BestPriceisOrderPayload(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     std::string to_string() const;
     friend std::ostream& operator<<(std::ostream& os, const BestPriceisOrderPayload& header);
@@ -33,7 +32,6 @@ struct BestPricesOrder {
             md_entries.emplace_back(BestPriceisOrderPayload{reader});
         }
     }
-//    void parse(BufferedReader& reader) {}
 
     size_t get_parsed_bytes() const {
         return SIZE + BestPriceisOrderPayload::SIZE * no_md_entries;

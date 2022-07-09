@@ -52,26 +52,25 @@ struct TemplateId {
     }
 
     std::string to_string() const {
-        std::string result;
         switch(value) {
-            case MessageTypeValue::Heartbeat: { result = "MessageTypeValue::Heartbeat" ; break;}
-            case MessageTypeValue::SequenceReset: { result = "MessageTypeValue::SequenceReset"; break;}
-            case MessageTypeValue::OrderBestPrices: { result = "MessageTypeValue::OrderBestPrices"; break;}
-            case MessageTypeValue::EmptyBook: { result = "MessageTypeValue::EmptyBook"; break;}
-            case MessageTypeValue::OrderUpdate: { result = "MessageTypeValue::OrderUpdate"; break;}
-            case MessageTypeValue::OrderExecution: { result = "MessageTypeValue::OrderExecution"; break;}
-            case MessageTypeValue::OrderBookSnapshotPacket: { result = "MessageTypeValue::OrderBookSnapshotPacket"; break;}
-            case MessageTypeValue::SecurityDefinition: { result = "MessageTypeValue::SecurityDefinition"; break;}
-            case MessageTypeValue::SecurityStatus: { result = "MessageTypeValue::SecurityStatus"; break;}
-            case MessageTypeValue::SecurityDefinitionUpdateReport: { result = "MessageTypeValue::SecurityDefinitionUpdateReport"; break;}
-            case MessageTypeValue::TradingSessionStatus: { result = "MessageTypeValue::TradingSessionStatus"; break;}
-            case MessageTypeValue::Logon: { result = "MessageTypeValue::Logon"; break;}
-            case MessageTypeValue::Logout: { result = "MessageTypeValue::Logout"; break;}
-            case MessageTypeValue::MarketDataRequest: { result = "MessageTypeValue::MarketDataRequest"; break;}
-            default: {throw std::runtime_error("Unsupported sbe message type");}
+            case MessageTypeValue::Heartbeat: return "Heartbeat";
+            case MessageTypeValue::SequenceReset: return "SequenceReset";
+            case MessageTypeValue::OrderBestPrices: return "OrderBestPrices";
+            case MessageTypeValue::EmptyBook: return "EmptyBook";
+            case MessageTypeValue::OrderUpdate: return "OrderUpdate";
+            case MessageTypeValue::OrderExecution: return "OrderExecution";
+            case MessageTypeValue::OrderBookSnapshotPacket: return "OrderBookSnapshotPacket";
+            case MessageTypeValue::SecurityDefinition: return "SecurityDefinition";
+            case MessageTypeValue::SecurityStatus: return "SecurityStatus";
+            case MessageTypeValue::SecurityDefinitionUpdateReport: return "SecurityDefinitionUpdateReport";
+            case MessageTypeValue::TradingSessionStatus: return "TradingSessionStatus";
+            case MessageTypeValue::Logon: return "Logon";
+            case MessageTypeValue::Logout: return "Logout";
+            case MessageTypeValue::MarketDataRequest: return "MarketDataRequest";
+            default: throw std::runtime_error("Unsupported sbe message type");
         }
-        return result;
     }
+
 
     friend std::ostream& operator<<(std::ostream& os, const TemplateId& message) {
         os << message.to_string();
@@ -90,7 +89,6 @@ struct SbeMessageHeader {
     uint16_t version {};
 
     explicit SbeMessageHeader(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     std::string to_string() const noexcept;
 
@@ -107,7 +105,6 @@ struct SbeMessage {
     size_t parsed {};
 
     explicit SbeMessage(BufferedReader& reader);
-    void parse(BufferedReader& reader);
 
     std::string to_string() const;
     size_t get_parsed_bytes() const { return parsed; }

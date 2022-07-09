@@ -13,7 +13,6 @@ struct RecordHeader {
     Time time_format;
 
     explicit RecordHeader(BufferedReader& reader, const PcapConfig& pcap_config);
-    void parse(BufferedReader& reader);
 
     friend std::ostream& operator<<(std::ostream& os, const RecordHeader& header);
 

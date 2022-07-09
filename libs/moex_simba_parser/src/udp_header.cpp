@@ -1,10 +1,6 @@
 #include "udp_header.h"
 
 UdpHeader::UdpHeader(BufferedReader& reader) {
-    parse(reader);
-}
-
-void UdpHeader::parse(BufferedReader& reader) {
     check_sum = reader.next<uint16_t>(std::endian::big);
 
     for (int i = 0; i < 4; i++) {

@@ -18,7 +18,6 @@ struct FragmentAndOffset {
 
     uint16_t value {};
 
-
     FragmentAndOffset(): value(0) {}
 
     explicit FragmentAndOffset(uint16_t fo): value(fo) {}

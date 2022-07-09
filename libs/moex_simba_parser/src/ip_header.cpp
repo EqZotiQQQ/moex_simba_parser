@@ -1,10 +1,6 @@
 #include "ip_header.h"
 
 IpHeader::IpHeader(BufferedReader &reader) {
-    parse(reader);
-}
-
-void IpHeader::parse(BufferedReader& reader) {
     for (int i = 0; i < 6; i++) {
         destination_mac.ip[i] = reader.next<uint8_t>();
     }
