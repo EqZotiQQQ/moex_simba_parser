@@ -13,3 +13,6 @@
 [submodule "3rd_party/date"]
 	path = 3rd_party/date
 	url = https://github.com/HowardHinnant/date.git
+[submodule "3rd_party/argparse"]
+	path = 3rd_party/argparse
+	url = https://github.com/p-ranav/argparse.git
