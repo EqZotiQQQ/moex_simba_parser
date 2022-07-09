@@ -17,6 +17,11 @@ Some usefull information:
 About PCAP format:
 https://tools.ietf.org/id/draft-gharris-opsawg-pcap-00.html
 
+About IP header:
+https://study-ccna.com/ip-header/
+
+About UDP header:
+https://www.imperva.com/learn/ddos/udp-user-datagram-protocol/
 
 About MOEX protocol:
 

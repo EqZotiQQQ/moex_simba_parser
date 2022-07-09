@@ -7,6 +7,7 @@
 #include "ip_header.h"
 #include "udp_header.h"
 #include "moex/market_data_packet.h"
+#include "pcap_config.h"
 
 struct Config {
     std::string encoded_file_path;
@@ -58,13 +59,14 @@ int main(int argc, char* argv[]) {
     Config config = Config(argc, argv);
 
     BufferedReader parser{config.encoded_file_path};
-    GlobalPcapHeader global_pcap_header{parser};
+    PcapConfig pcap_config;
+    GlobalPcapHeader global_pcap_header{parser, pcap_config};
     std::cout << global_pcap_header << '\n';
 
     for (int i = 0; i < config.packets_to_parse; i++) {
 
         std::cout << "Packet number " << i+1 << '\n';
-        RecordHeader record_header{parser, global_pcap_header.magic_number.is_ns()}; // TODO pass config or smth like that
+        RecordHeader record_header{parser, pcap_config};
         std::cout << record_header << '\n';
         uint32_t len = record_header.pack_length;
 

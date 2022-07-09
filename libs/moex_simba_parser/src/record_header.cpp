@@ -3,12 +3,12 @@
 #include <iomanip>
 #include "utility.h"
 
-RecordHeader::RecordHeader(BufferedReader& reader, bool is_ns):
-        ts_ms{reader.next<uint32_t>()},
-        ts_ns{reader.next<uint32_t>()},
+RecordHeader::RecordHeader(BufferedReader& reader, const PcapConfig& pcap_config):
+        seconds{reader.next<uint32_t>()},
+        secondary_time{reader.next<uint32_t>()},
         pack_length{reader.next<uint32_t>()},
         real_length{reader.next<uint32_t>()},
-        is_ns(is_ns)
+        time_format(pcap_config.time_format)
 {
 }
 
@@ -18,13 +18,14 @@ void RecordHeader::parse(BufferedReader& reader) {
 std::string RecordHeader::to_string() const {
     return fmt::format(
             "Sending time: {}\n"
-            "Timestamp ms: {}\n"
-            "Timestamp ns: {}\n"
-            "Packet length: {}\n"
-            "Real length: {}",
-            to_human_readable_time(ts_ms, ts_ns, is_ns),
-            ts_ms,
-            ts_ns,
+            "Timestamp Seconds: {}\n"
+            "Timestamp {}(Microseconds or nanoseconds): {}\n"
+            "Captured Packet Length: {}\n"
+            "Original Packet Length: {}",
+            to_human_readable_time(seconds, secondary_time),
+            seconds,
+            time_format == Time::MICROSECONDS ? "Microseconds" : "Nanoseconds",
+            secondary_time,
             pack_length,
             real_length
     );

@@ -13,7 +13,7 @@ void IpHeader::parse(BufferedReader& reader) {
         source_mac.ip[i] = reader.next<uint8_t>();
     }
 
-    protocol_version.value = reader.next<uint16_t>(std::endian::big);
+    protocol_version = ProtocolVersion(reader.next<uint16_t>(std::endian::big));
     strange_field = reader.next<uint8_t>();
     differentiated_services_field = reader.next<uint8_t>();
     total_length = reader.next<uint16_t>(std::endian::big);
