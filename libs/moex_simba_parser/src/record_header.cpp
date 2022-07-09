@@ -22,7 +22,7 @@ std::string RecordHeader::to_string() const {
             "Timestamp {}(Microseconds or nanoseconds): {}\n"
             "Captured Packet Length: {}\n"
             "Original Packet Length: {}",
-            to_human_readable_time(seconds, secondary_time),
+            to_human_readable_time(seconds),
             seconds,
             time_format == Time::MICROSECONDS ? "Microseconds" : "Nanoseconds",
             secondary_time,

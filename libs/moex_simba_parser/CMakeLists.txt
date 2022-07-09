@@ -14,7 +14,6 @@ add_library(${PROJECT_NAME}
         src/order_book_snapshot.cpp
         src/order_update.cpp
         src/sbe_message.cpp
-        src/magic_number.cpp
         src/protocol_version.cpp include/pcap_config.h)
 
 add_library(libs::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -46,6 +45,11 @@ target_link_libraries(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         fmt
+        )
+
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        date
         )
 
 if(BUILD_TESTING)

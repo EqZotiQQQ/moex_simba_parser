@@ -2,7 +2,7 @@
 
 GlobalPcapHeader::GlobalPcapHeader(BufferedReader& reader, PcapConfig& pcap_config):
         magic_number{reader.next<uint32_t>(std::endian::big)} {
-    pcap_config.init(magic_number.value);
+    pcap_config.init(magic_number);
     reader.set_endian(pcap_config.endian);
     version_major = reader.next<uint16_t>();
     version_minor = reader.next<uint16_t>();
@@ -24,7 +24,7 @@ std::string GlobalPcapHeader::to_string() const noexcept {
             "Sig figs: {}\n"
             "Snap len: {}\n"
             "Network: {}\n",
-            magic_number.value,
+            magic_number,
             version_major,
             version_minor,
             time_zone,

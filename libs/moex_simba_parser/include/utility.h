@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fmt/format.h>
 #include <ctime>
+#include <date/date.h>
+#include "pcap_config.h"
 
 #define INT64_NULL (-9223372036854775807LL - 1)
 #define DECIMAL6_NULL (9223372036854775807)
@@ -78,7 +80,7 @@ struct MDEntryType {
 };
 
 //nano -> ns 10^-9
-inline auto sec_ns_to_ns(uint64_t sec, uint64_t ns) {
+inline int64_t sec_ns_to_ns(uint64_t sec, uint64_t ns) {
     return sec * 1'000'000'000 + ns;
 }
 
@@ -87,9 +89,9 @@ inline auto sec_us_to_ns(uint64_t sec, uint64_t us) {
     return sec * 1'000'000 + us;
 }
 
-inline std::string to_human_readable_time(uint64_t sec, uint64_t /*us*//*, bool*/ /*is_ns*/) {
-    std::time_t t = sec;
-    // TODO make it more clear and increase precision
-    return std::asctime(std::localtime(&t));
+inline std::string to_human_readable_time(uint64_t sec) {
+    date::sys_time<std::chrono::seconds> st{round<std::chrono::seconds>(std::chrono::duration<int64_t>{sec})};
+    std::string time {date::format("%F %T", st) };
+    return time;
 }
 

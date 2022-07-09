@@ -5,7 +5,6 @@
 #include <binary_parser/buffered_reader.h>
 
 #include <fmt/format.h>
-#include "magic_number.h"
 #include "pcap_config.h"
 
 
@@ -35,12 +34,16 @@ struct LinkType {
             case LinkTypeE::LINKTYPE_ETHERNET: {
                 return "IEEE 802.3 Ethernet";
             }
+            // Many other link types
+            default: {
+                throw std::runtime_error("Unsupported linktype, refer https://www.ietf.org/archive/id/draft-gharris-opsawg-pcap-01.html");
+            }
         }
     }
 };
 
 struct GlobalPcapHeader {
-    MagicNumber magic_number;
+    uint32_t magic_number;
     uint16_t version_major;
     uint16_t version_minor;
     int32_t time_zone;
