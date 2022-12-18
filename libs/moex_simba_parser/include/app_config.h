@@ -7,7 +7,7 @@ struct Config {
     std::string decoded_file_path {};
     size_t packets_to_parse {};
 
-    Config(const std::string& enc_file_path, size_t n) {}
+    Config() {}
 
     Config(int argc, char* argv[]) {
         argparse::ArgumentParser a("MOEX Simba parser");

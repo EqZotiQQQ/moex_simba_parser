@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 }
 
 TEST(MoexSimbaParserTest, parse_global_pcap_header) {
-    Config config{encoded_file_path, 1};
+    Config config{};
 
     BufferedReader parser{config.encoded_file_path};
     PcapConfig pcap_config;
@@ -31,7 +31,7 @@ TEST(MoexSimbaParserTest, parse_global_pcap_header) {
     for (size_t i = 0; i < config.packets_to_parse; i++) {
 
         std::cout << "Packet number " << i+1 << '\n';
-        RecordHeader record_header{parser, global_pcap_header.magic_number.is_ns()};
+        RecordHeader record_header{parser, pcap_config};
         std::cout << record_header << '\n';
         uint32_t len = record_header.pack_length;
 
