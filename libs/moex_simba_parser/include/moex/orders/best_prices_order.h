@@ -12,7 +12,7 @@ struct BestPriceisOrderPayload {
     uint8_t bp_flags {};
     int32_t security_id {};
 
-    explicit BestPriceisOrderPayload(BufferedReader& reader);
+    explicit BestPriceisOrderPayload(buffered_reader::BufferedReader& reader);
 
     std::string to_string() const;
     friend std::ostream& operator<<(std::ostream& os, const BestPriceisOrderPayload& header);
@@ -25,7 +25,7 @@ struct BestPricesOrder {
     uint8_t no_md_entries {};
     std::vector<BestPriceisOrderPayload> md_entries;
 
-    explicit BestPricesOrder(BufferedReader& reader):
+    explicit BestPricesOrder(buffered_reader::BufferedReader& reader):
             entry_size{reader.next<uint16_t>()},
             no_md_entries{reader.next<uint8_t>()} {
         for (int i = 0; i < no_md_entries; i++) {

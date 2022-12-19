@@ -80,7 +80,7 @@ struct SbeHeader {
     uint16_t schema_id {};
     uint16_t version {};
 
-    SbeHeader(BufferedReader& reader) {
+    SbeHeader(buffered_reader::BufferedReader& reader) {
         block_length = reader.next<uint16_t>();
         template_id = MessageType{reader.next<uint16_t>()};
         schema_id = reader.next<uint16_t>();

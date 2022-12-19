@@ -1,6 +1,6 @@
 #include "moex/market_data_packet_header.h"
 
-MarketDataPacketHeader::MarketDataPacketHeader(BufferedReader& reader):
+MarketDataPacketHeader::MarketDataPacketHeader(buffered_reader::BufferedReader& reader):
         msg_seq_number{reader.next<uint32_t>()},
         msg_size{reader.next<uint16_t>()},
         flags{reader.next<uint16_t>()},

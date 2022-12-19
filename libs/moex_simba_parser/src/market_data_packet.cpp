@@ -1,6 +1,6 @@
 #include "moex/market_data_packet.h"
 
-MarketDataPacket::MarketDataPacket(BufferedReader &reader, size_t packet_length):
+MarketDataPacket::MarketDataPacket(buffered_reader::BufferedReader &reader, size_t packet_length):
         header{MarketDataPacketHeader{reader}} {
     packet_length -= 16;
     if (header.is_incremental()) {

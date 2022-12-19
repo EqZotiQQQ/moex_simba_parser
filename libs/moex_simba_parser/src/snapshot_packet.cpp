@@ -1,6 +1,6 @@
 #include "moex/packets/snapshot_packet.h"
 
-SnapshotPacket::SnapshotPacket(BufferedReader& reader, size_t packet_length):
+SnapshotPacket::SnapshotPacket(buffered_reader::BufferedReader& reader, size_t packet_length):
         sbe_message{reader} {
 }
 

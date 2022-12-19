@@ -62,7 +62,7 @@ struct OrderBookSnapshot {
 
     static constexpr size_t SIZE = 49;
 
-    explicit OrderBookSnapshot(BufferedReader& reader);
+    explicit OrderBookSnapshot(buffered_reader::BufferedReader& reader);
 
     static size_t get_parsed_bytes() {return SIZE;}
     std::string to_string() const;
@@ -81,7 +81,7 @@ struct OrderBookSnapshotPacket {
 
     static constexpr size_t SIZE = 19;
 
-    explicit OrderBookSnapshotPacket(BufferedReader& reader):
+    explicit OrderBookSnapshotPacket(buffered_reader::BufferedReader& reader):
             security_id{reader.next<int32_t>()},
             last_msg_seq_num_processed{reader.next<uint32_t>()},
             rpt_seq{reader.next<uint32_t>()},

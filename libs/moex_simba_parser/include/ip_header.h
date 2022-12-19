@@ -22,7 +22,7 @@ struct IpHeader {
     uint8_t ttl {};
     Protocol udp_protocol {};
 
-    explicit IpHeader(BufferedReader& reader);
+    explicit IpHeader(buffered_reader::BufferedReader& reader);
     std::string to_string() const;
 
     friend std::ostream& operator<<(std::ostream& os, const IpHeader& header);

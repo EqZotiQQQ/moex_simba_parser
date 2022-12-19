@@ -51,7 +51,7 @@ struct GlobalPcapHeader {
     uint32_t snap_len;
     LinkType network;
 
-    GlobalPcapHeader(BufferedReader& reader, PcapConfig& pcap_config);
+    GlobalPcapHeader(buffered_reader::BufferedReader& reader, PcapConfig& pcap_config);
     std::string to_string() const noexcept;
 
     friend std::ostream& operator<<(std::ostream& os, const GlobalPcapHeader& header);

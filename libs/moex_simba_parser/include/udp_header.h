@@ -16,7 +16,7 @@ struct UdpHeader {
     uint16_t length {};
     uint16_t check_sum_udp {};
 
-    UdpHeader(BufferedReader& reader);
+    UdpHeader(buffered_reader::BufferedReader& reader);
 
     std::string to_string() const noexcept;
 

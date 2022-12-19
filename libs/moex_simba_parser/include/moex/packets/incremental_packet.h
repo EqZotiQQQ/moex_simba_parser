@@ -10,7 +10,7 @@ struct IncrementalPacketHeader {
 
     static constexpr size_t SIZE {12};
 
-    explicit IncrementalPacketHeader(BufferedReader& reader);
+    explicit IncrementalPacketHeader(buffered_reader::BufferedReader& reader);
 
     std::string to_string() const;
     friend std::ostream& operator<<(std::ostream& os, const IncrementalPacketHeader& header);
@@ -23,7 +23,7 @@ struct IncrementalPacket {
 
     size_t parsed = 0;
 
-    explicit IncrementalPacket(BufferedReader& reader, size_t packet_length);
+    explicit IncrementalPacket(buffered_reader::BufferedReader& reader, size_t packet_length);
 
     size_t get_parsed_bytes() const { return parsed; }
     std::string to_string() const;

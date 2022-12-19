@@ -6,7 +6,7 @@ struct MarketDataPacket {
     MarketDataPacketHeader header;
     std::variant<std::monostate, IncrementalPacket, SnapshotPacket> packet;
 
-    explicit MarketDataPacket(BufferedReader& reader, size_t packet_length);
+    explicit MarketDataPacket(buffered_reader::BufferedReader& reader, size_t packet_length);
 
     friend std::ostream& operator<<(std::ostream& os, const MarketDataPacket& header);
 };

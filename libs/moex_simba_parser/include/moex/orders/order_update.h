@@ -94,7 +94,7 @@ struct OrderUpdate {
     uint8_t  md_entry_type;
 
     static constexpr size_t SIZE = 42;
-    explicit OrderUpdate(BufferedReader& reader);
+    explicit OrderUpdate(buffered_reader::BufferedReader& reader);
 
     static constexpr size_t get_parsed_bytes() { return SIZE; }
 

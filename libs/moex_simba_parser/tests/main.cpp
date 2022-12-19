@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 TEST(MoexSimbaParserTest, parse_global_pcap_header) {
     Config config{};
 
-    BufferedReader parser{config.encoded_file_path};
+    buffered_reader::BufferedReader parser{config.encoded_file_path};
     PcapConfig pcap_config;
     GlobalPcapHeader global_pcap_header{parser, pcap_config};
     std::cout << global_pcap_header << '\n';

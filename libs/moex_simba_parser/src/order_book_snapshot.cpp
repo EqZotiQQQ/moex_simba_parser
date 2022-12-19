@@ -1,7 +1,7 @@
 #include "moex/orders/order_book_snapshot.h"
 #include "utility.h"
 
-OrderBookSnapshot::OrderBookSnapshot(BufferedReader &reader):
+OrderBookSnapshot::OrderBookSnapshot(buffered_reader::BufferedReader &reader):
     md_entry_id{reader.next<int64_t>()},
     transact_time{reader.next<uint64_t>()},
     md_entry_px{reader.next<int64_t>()},

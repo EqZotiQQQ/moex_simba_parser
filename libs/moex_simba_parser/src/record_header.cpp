@@ -3,7 +3,7 @@
 #include <iomanip>
 #include "utility.h"
 
-RecordHeader::RecordHeader(BufferedReader& reader, const PcapConfig& pcap_config):
+RecordHeader::RecordHeader(buffered_reader::BufferedReader& reader, const PcapConfig& pcap_config):
         seconds{reader.next<uint32_t>()},
         secondary_time{reader.next<uint32_t>()},
         pack_length{reader.next<uint32_t>()},

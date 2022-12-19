@@ -1,6 +1,6 @@
 #include "moex/orders/order_execution.h"
 
-OrderExecution::OrderExecution(BufferedReader& reader):
+OrderExecution::OrderExecution(buffered_reader::BufferedReader& reader):
         md_entry_id{reader.next<int64_t>()},
         md_entry_px{reader.next<int64_t>()},
         md_entry_size{reader.next<int64_t>()},

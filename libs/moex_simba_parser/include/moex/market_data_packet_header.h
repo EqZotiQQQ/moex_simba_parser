@@ -67,7 +67,7 @@ struct MarketDataPacketHeader {
     MessageFlags flags;
     uint64_t sending_time;
 
-    explicit MarketDataPacketHeader(BufferedReader& reader);
+    explicit MarketDataPacketHeader(buffered_reader::BufferedReader& reader);
 
     bool is_incremental() const noexcept {
         return flags.is_incremental_message();

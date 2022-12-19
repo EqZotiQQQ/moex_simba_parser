@@ -88,7 +88,7 @@ struct SbeMessageHeader {
     uint16_t schema_ID {};
     uint16_t version {};
 
-    explicit SbeMessageHeader(BufferedReader& reader);
+    explicit SbeMessageHeader(buffered_reader::BufferedReader& reader);
 
     std::string to_string() const noexcept;
 
@@ -104,7 +104,7 @@ struct SbeMessage {
 
     size_t parsed {};
 
-    explicit SbeMessage(BufferedReader& reader);
+    explicit SbeMessage(buffered_reader::BufferedReader& reader);
 
     std::string to_string() const;
     size_t get_parsed_bytes() const { return parsed; }

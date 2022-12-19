@@ -1,6 +1,6 @@
 #include "global_pcap_header.h"
 
-GlobalPcapHeader::GlobalPcapHeader(BufferedReader& reader, PcapConfig& pcap_config):
+GlobalPcapHeader::GlobalPcapHeader(buffered_reader::BufferedReader& reader, PcapConfig& pcap_config):
         magic_number{reader.next<uint32_t>(std::endian::big)} {
     pcap_config.init(magic_number);
     reader.set_endian(pcap_config.endian);

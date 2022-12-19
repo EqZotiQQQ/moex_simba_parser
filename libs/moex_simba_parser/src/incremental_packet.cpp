@@ -1,6 +1,6 @@
 #include "moex/packets/incremental_packet.h"
 
-IncrementalPacketHeader::IncrementalPacketHeader(BufferedReader &reader) {
+IncrementalPacketHeader::IncrementalPacketHeader(buffered_reader::BufferedReader &reader) {
     transaction_time = reader.next<uint64_t>();
     exchange_trading_session_id = reader.next<uint32_t>();
 }
@@ -20,7 +20,7 @@ std::string IncrementalPacketHeader::to_string() const {
     );
 }
 
-IncrementalPacket::IncrementalPacket(BufferedReader &reader, size_t packet_length):
+IncrementalPacket::IncrementalPacket(buffered_reader::BufferedReader &reader, size_t packet_length):
         header{IncrementalPacketHeader{reader}} {
     parsed += IncrementalPacketHeader::SIZE;
 

@@ -1,7 +1,7 @@
 #include "moex/sbe/sbe_message.h"
 #include <fmt/format.h>
 
-SbeMessageHeader::SbeMessageHeader(BufferedReader& reader) {
+SbeMessageHeader::SbeMessageHeader(buffered_reader::BufferedReader& reader) {
     block_length = reader.next<uint16_t>();
     template_ID = TemplateId{reader.next<uint16_t>()};
     schema_ID = reader.next<uint16_t>();
@@ -32,7 +32,7 @@ SbeMessageHeader::SbeMessageHeader() {
 
 }
 
-SbeMessage::SbeMessage(BufferedReader& reader):
+SbeMessage::SbeMessage(buffered_reader::BufferedReader& reader):
         header{SbeMessageHeader{reader}} {
     parsed += SbeMessageHeader::SIZE;
 

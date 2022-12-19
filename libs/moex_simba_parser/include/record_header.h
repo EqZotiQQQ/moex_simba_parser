@@ -12,7 +12,7 @@ struct RecordHeader {
 
     Time time_format;
 
-    explicit RecordHeader(BufferedReader& reader, const PcapConfig& pcap_config);
+    explicit RecordHeader(buffered_reader::BufferedReader& reader, const PcapConfig& pcap_config);
 
     friend std::ostream& operator<<(std::ostream& os, const RecordHeader& header);
 

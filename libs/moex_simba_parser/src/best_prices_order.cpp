@@ -1,7 +1,7 @@
 #include "moex/orders/best_prices_order.h"
 
 
-BestPriceisOrderPayload::BestPriceisOrderPayload(BufferedReader& reader):
+BestPriceisOrderPayload::BestPriceisOrderPayload(buffered_reader::BufferedReader& reader):
     mkt_bid_px{reader.next<int64_t>()},
     mkt_offer_px{reader.next<int64_t>()},
     bp_flags{reader.next<uint8_t>()},

@@ -1,6 +1,6 @@
 #include "ip_header.h"
 
-IpHeader::IpHeader(BufferedReader &reader) {
+IpHeader::IpHeader(buffered_reader::BufferedReader &reader) {
     for (int i = 0; i < 6; i++) {
         destination_mac.ip[i] = reader.next<uint8_t>();
     }
